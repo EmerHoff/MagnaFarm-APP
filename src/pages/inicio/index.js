@@ -1,27 +1,37 @@
-/*import React, {Component, View, Text} from 'react';
+import React from 'react';
+import {View, Text, Button, StyleSheet} from 'react-native';
 
-export default class Inicio extends Component {
+export default class Inicio extends React.Component {
   render() {
     return (
-      <View>
-        <Text>Tela de Inicio</Text>
+      <View style={styles.container}>
+        <Text style={styles.texto}>Home Screen</Text>
+        <Button
+          title="Go to Login"
+          onPress={() => {
+            this.props.navigation.navigate('Login');
+          }}
+        />
       </View>
     );
   }
-}*/
-
-import React from 'react';
-import {View, Text, Button} from 'react-native';
-
-function Inicio({navigation}) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text>Home Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Login')}
-      />
-    </View>
-  );
 }
-export default Inicio;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#269909',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: {
+    fontWeight: 'bold',
+    fontSize: 50,
+    color: '#fb5b5a',
+    marginBottom: 40,
+  },
+  texto: {
+    color: 'white',
+    fontSize: 20,
+  },
+});
