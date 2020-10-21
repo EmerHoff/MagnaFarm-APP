@@ -20,7 +20,7 @@ export default class Inicio extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#269909',
+    backgroundColor: '#3c9c54',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -11,8 +11,8 @@ function Routes() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Inicio" component={Inicio} />
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+        <Stack.Screen name="Inicio" component={Inicio} options={{ headerLeft: null, headerTitleAlign: "center" }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
