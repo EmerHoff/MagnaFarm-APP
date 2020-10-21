@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import React from 'react';
 import {
   View,
@@ -8,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import api from '../../services/api';
+import api from '../services/api';
 
 export default class Login extends React.Component {
   state = {
@@ -34,7 +33,7 @@ export default class Login extends React.Component {
       console.log('Sem infos');
       this.setState(
         {
-          error: 'Preencha usuário e senha para continuar!',
+          error: 'Preencha os campos de email e senha para continuar!',
         },
         () => false,
       );
@@ -59,7 +58,7 @@ export default class Login extends React.Component {
         this.props.navigation.dispatch(resetAction);
       } catch (_err) {
         this.setState({
-          error: 'Houve um problema com o login, verifique suas credenciais!',
+          error: 'Houve um problema com o login, verifique se os dados informados estão corretos!',
         });
       }*/
     }
@@ -142,7 +141,8 @@ const styles = StyleSheet.create({
   },
   forgot: {
     color: '#ebf3e8',
-    fontSize: 11,
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   loginBtn: {
     width: '80%',
@@ -151,16 +151,21 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
+    marginTop: 30,
     marginBottom: 10,
   },
   loginText: {
     color: '#ebf3e8',
+    fontSize: 16,
+    fontWeight: 'bold',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorText: {
     textAlign: 'center',
     color: '#ce2029',
-    fontSize: 16,
+    fontSize: 13,
     marginTop: 15,
+    fontWeight: 'bold',
   },
 });
