@@ -1,3 +1,4 @@
+import {StackActions} from '@react-navigation/native';
 import React from 'react';
 import {
   View,
@@ -5,7 +6,9 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  AsyncStorage,
 } from 'react-native';
+import {NavigationActions} from 'react-navigation';
 
 import api from '../services/api';
 
@@ -25,7 +28,7 @@ export default class Login extends React.Component {
   };
 
   handleCreateAccountPress = () => {
-    this.props.navigation.navigate('SignUp');
+    this.props.navigation.navigate('Cadastro');
   };
 
   handleLoginPress = async () => {
@@ -39,28 +42,28 @@ export default class Login extends React.Component {
       );
     } else {
       console.log('Tudo certo');
-      this.props.navigation.navigate('Inicio');
-      /*try {
-        const response = await api.post('/sessions', {
-          email: this.state.email,
-          password: this.state.password,
+
+      try {
+        const response = await api.post('/usuario/login', {
+          login: this.state.email,
+          senha: this.state.password,
         });
 
-        const resetAction = StackActions.reset({
-          index: 0,
-          actions: [
-            NavigationActions.navigate({
-              routeName: 'Main',
-              params: {token: response.data.token},
-            }),
-          ],
-        });
-        this.props.navigation.dispatch(resetAction);
+        console.log(response.data);
+
+        if (response.data.statusCode === 200) {
+          this.props.navigation.navigate('Inicio');
+        } else {
+          this.setState({
+            error: response.data.message,
+          });
+        }
       } catch (_err) {
         this.setState({
-          error: 'Houve um problema com o login, verifique se os dados informados estão corretos!',
+          error:
+            'Houve um problema com o login, verifique se os dados informados estão corretos!',
         });
-      }*/
+      }
     }
   };
 
@@ -106,7 +109,11 @@ export default class Login extends React.Component {
         </TouchableOpacity>
 
         <TouchableOpacity>
-          <Text style={styles.loginText}>Cadastrar</Text>
+          <Text
+            style={styles.loginText}
+            onPress={this.handleCreateAccountPress}>
+            Cadastrar
+          </Text>
         </TouchableOpacity>
       </View>
     );

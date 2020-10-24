@@ -5,9 +5,9 @@ export default class Inicio extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.texto}>Home Screen</Text>
+        <Text style={styles.texto}>Tela Inicial</Text>
         <Button
-          title="Go to Login"
+          title="Voltar para o Login"
           onPress={() => {
             this.props.navigation.navigate('Login');
           }}
