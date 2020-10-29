@@ -15,7 +15,8 @@ export default class NovaPropriedade extends React.Component {
     endereco: '',
     comarca: '',
     matricula: '',
-    area: 0,
+    area: '',
+    error: ''
   };
 
   handleCadastroPress = async () => {
@@ -24,7 +25,7 @@ export default class NovaPropriedade extends React.Component {
       this.state.endereco.length === 0 ||
       this.state.comarca.length === 0 ||
       this.state.matricula.length === 0 ||
-      this.state.area <= 0
+      this.state.area === 0
     ) {
       this.setState(
         {
@@ -34,7 +35,7 @@ export default class NovaPropriedade extends React.Component {
       );
     } else {
       try {
-        const response = await api.post('/usuario', {
+        /*const response = await api.post('/usuario', {
           login: this.state.login,
           nome: this.state.nome,
           telefone: this.state.telefone,
@@ -50,7 +51,7 @@ export default class NovaPropriedade extends React.Component {
           this.setState({
             error: response.data.message,
           });
-        }
+        }*/
       } catch (_err) {
         this.setState({
           error:
@@ -71,7 +72,9 @@ export default class NovaPropriedade extends React.Component {
             placeholderTextColor="#a9cba1"
             autoCorrect={false}
             value={this.state.nome}
-            onChangeText={this.setState({nome})}
+            onChangeText={(nome) => {
+              this.setState({nome});
+            }}
           />
         </View>
         <View style={styles.inputView}>
@@ -81,7 +84,9 @@ export default class NovaPropriedade extends React.Component {
             placeholderTextColor="#a9cba1"
             autoCorrect={false}
             value={this.state.endereco}
-            onChangeText={this.setState({endereco})}
+            onChangeText={(endereco) => {
+              this.setState({endereco});
+            }}
           />
         </View>
         <View style={styles.inputView}>
@@ -91,7 +96,9 @@ export default class NovaPropriedade extends React.Component {
             placeholderTextColor="#a9cba1"
             autoCorrect={false}
             value={this.state.comarca}
-            onChangeText={this.setState({comarca})}
+            onChangeText={(comarca) => {
+              this.setState({comarca});
+            }}
           />
         </View>
         <View style={styles.inputView}>
@@ -102,7 +109,9 @@ export default class NovaPropriedade extends React.Component {
             autoCapitalize="none"
             autoCorrect={false}
             value={this.state.matricula}
-            onChangeText={this.setState({matricula})}
+            onChangeText={(matricula) => {
+              this.setState({matricula});
+            }}
           />
         </View>
         <View style={styles.inputView}>
@@ -112,7 +121,9 @@ export default class NovaPropriedade extends React.Component {
             placeholderTextColor="#a9cba1"
             autoCorrect={false}
             value={this.state.area}
-            onChangeText={this.setState({area})}
+            onChangeText={(area) => {
+              this.setState({area});
+            }}
           />
         </View>
 
