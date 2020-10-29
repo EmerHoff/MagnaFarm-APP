@@ -9,7 +9,7 @@ import {
 
 import api from '../services/api';
 
-export default class Cadastro extends React.Component {
+export default class NovaPropriedade extends React.Component {
   state = {
     nome: '',
     login: '',
@@ -81,7 +81,7 @@ export default class Cadastro extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.logo}>Cadastro</Text>
+        <Text style={styles.menuText}>Nova Propriedade</Text>
         <View style={styles.inputView}>
           <TextInput
             style={styles.inputText}
@@ -95,7 +95,7 @@ export default class Cadastro extends React.Component {
         <View style={styles.inputView}>
           <TextInput
             style={styles.inputText}
-            placeholder="Endereço de email"
+            placeholder="Endereço"
             placeholderTextColor="#a9cba1"
             autoCapitalize="none"
             autoCorrect={false}
@@ -106,7 +106,7 @@ export default class Cadastro extends React.Component {
         <View style={styles.inputView}>
           <TextInput
             style={styles.inputText}
-            placeholder="Telefone"
+            placeholder="Comarca"
             placeholderTextColor="#a9cba1"
             autoCapitalize="none"
             autoCorrect={false}
@@ -116,28 +116,28 @@ export default class Cadastro extends React.Component {
         </View>
         <View style={styles.inputView}>
           <TextInput
-            secureTextEntry
             style={styles.inputText}
-            placeholder="Senha"
+            placeholder="Matrícula"
+            placeholderTextColor="#a9cba1"
             autoCapitalize="none"
             autoCorrect={false}
-            placeholderTextColor="#a9cba1"
-            value={this.state.senha}
-            onChangeText={this.handleSenhaChange}
+            value={this.state.telefone}
+            onChangeText={this.handleTelefoneChange}
           />
         </View>
         <View style={styles.inputView}>
           <TextInput
-            secureTextEntry
             style={styles.inputText}
-            placeholder="Confirma Senha"
+            placeholder="Área Total"
+            placeholderTextColor="#a9cba1"
             autoCapitalize="none"
             autoCorrect={false}
-            placeholderTextColor="#a9cba1"
-            value={this.state.confirma_senha}
-            onChangeText={this.handleConfirmaSenhaChange}
+            value={this.state.telefone}
+            onChangeText={this.handleTelefoneChange}
           />
         </View>
+
+        <TextInput style={styles.inputText}>Anexar Documento</TextInput>
 
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>
@@ -169,9 +169,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logo: {
+  menuText: {
     fontWeight: 'bold',
-    fontSize: 50,
+    fontSize: 40,
     color: '#ebf3e8',
     marginBottom: 40,
   },

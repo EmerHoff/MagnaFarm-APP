@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   AsyncStorage,
+  Image,
 } from 'react-native';
 import {NavigationActions} from 'react-navigation';
 
@@ -70,7 +71,10 @@ export default class Login extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.logo}>MagnaFarm</Text>
+        <Image
+          style={styles.logoImage}
+          source={require('../images/logo.png')}
+        />
         <View style={styles.inputView}>
           <TextInput
             style={styles.inputText}
@@ -127,7 +131,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logo: {
+  logoImage: {
+    width: '60%',
+    height: '30%',
+    resizeMode: 'stretch',
+    padding: 10,
+    marginBottom: '10%',
+  },
+  logoText: {
     fontWeight: 'bold',
     fontSize: 50,
     color: '#ebf3e8',
