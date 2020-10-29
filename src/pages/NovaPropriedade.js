@@ -12,41 +12,23 @@ import api from '../services/api';
 export default class NovaPropriedade extends React.Component {
   state = {
     nome: '',
-    login: '',
-    senha: '',
-    confirma_senha: '',
-    telefone: '',
-    error: '',
-  };
-
-  handleLoginChange = (login) => {
-    this.setState({login});
-  };
-  handleNomeChange = (nome) => {
-    this.setState({nome});
-  };
-  handleSenhaChange = (senha) => {
-    this.setState({senha});
-  };
-  handleConfirmaSenhaChange = (confirma_senha) => {
-    this.setState({confirma_senha});
-  };
-  handleTelefoneChange = (telefone) => {
-    this.setState({telefone});
+    endereco: '',
+    comarca: '',
+    matricula: '',
+    area: 0,
   };
 
   handleCadastroPress = async () => {
     if (
-      this.state.login.length === 0 ||
       this.state.nome.length === 0 ||
-      this.state.telefone.length === 0 ||
-      this.state.identificador.length === 0 ||
-      this.state.senha.length === 0 ||
-      this.state.confirma_senha.length === 0
+      this.state.endereco.length === 0 ||
+      this.state.comarca.length === 0 ||
+      this.state.matricula.length === 0 ||
+      this.state.area <= 0
     ) {
       this.setState(
         {
-          error: 'Preencha todos os campos antes de continuar!',
+          error: 'Preencha todos os campos antes de salvar!',
         },
         () => false,
       );
@@ -89,7 +71,7 @@ export default class NovaPropriedade extends React.Component {
             placeholderTextColor="#a9cba1"
             autoCorrect={false}
             value={this.state.nome}
-            onChangeText={this.handleNomeChange}
+            onChangeText={this.setState({nome})}
           />
         </View>
         <View style={styles.inputView}>
@@ -97,10 +79,9 @@ export default class NovaPropriedade extends React.Component {
             style={styles.inputText}
             placeholder="Endereço"
             placeholderTextColor="#a9cba1"
-            autoCapitalize="none"
             autoCorrect={false}
-            value={this.state.login}
-            onChangeText={this.handleLoginChange}
+            value={this.state.endereco}
+            onChangeText={this.setState({endereco})}
           />
         </View>
         <View style={styles.inputView}>
@@ -108,10 +89,9 @@ export default class NovaPropriedade extends React.Component {
             style={styles.inputText}
             placeholder="Comarca"
             placeholderTextColor="#a9cba1"
-            autoCapitalize="none"
             autoCorrect={false}
-            value={this.state.telefone}
-            onChangeText={this.handleTelefoneChange}
+            value={this.state.comarca}
+            onChangeText={this.setState({comarca})}
           />
         </View>
         <View style={styles.inputView}>
@@ -121,8 +101,8 @@ export default class NovaPropriedade extends React.Component {
             placeholderTextColor="#a9cba1"
             autoCapitalize="none"
             autoCorrect={false}
-            value={this.state.telefone}
-            onChangeText={this.handleTelefoneChange}
+            value={this.state.matricula}
+            onChangeText={this.setState({matricula})}
           />
         </View>
         <View style={styles.inputView}>
@@ -130,10 +110,9 @@ export default class NovaPropriedade extends React.Component {
             style={styles.inputText}
             placeholder="Área Total"
             placeholderTextColor="#a9cba1"
-            autoCapitalize="none"
             autoCorrect={false}
-            value={this.state.telefone}
-            onChangeText={this.handleTelefoneChange}
+            value={this.state.area}
+            onChangeText={this.setState({area})}
           />
         </View>
 
