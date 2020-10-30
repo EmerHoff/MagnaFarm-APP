@@ -130,7 +130,7 @@ export default class Cadastro extends React.Component {
           <TextInput
             secureTextEntry
             style={styles.inputText}
-            placeholder="Confirma Senha"
+            placeholder="Confirmar Senha"
             autoCapitalize="none"
             autoCorrect={false}
             placeholderTextColor="#a9cba1"

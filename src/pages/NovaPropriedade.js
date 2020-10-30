@@ -65,6 +65,7 @@ export default class NovaPropriedade extends React.Component {
     return (
       <View style={styles.container}>
         <Text style={styles.menuText}>Nova Propriedade</Text>
+        <Text style={styles.infoText}>Preencha nos campos abaixo todas as informações sobre a propriedade.</Text>
         <View style={styles.inputView}>
           <TextInput
             style={styles.inputText}
@@ -116,6 +117,7 @@ export default class NovaPropriedade extends React.Component {
         </View>
         <View style={styles.inputView}>
           <TextInput
+            keyboardType={'decimal-pad'}
             style={styles.inputText}
             placeholder="Área Total"
             placeholderTextColor="#a9cba1"
@@ -136,16 +138,16 @@ export default class NovaPropriedade extends React.Component {
           style={styles.loginBtn}
           //onPress={this.handleCadastroPress}>
           onPress={() => {
-            this.props.navigation.navigate('BemVindo');
+            this.props.navigation.navigate('Propriedade');
           }}>
-          <Text style={styles.loginText}>Avançar</Text>
+          <Text style={styles.loginText}>Salvar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('Inicio');
           }}>
-          <Text style={styles.forgot}>Voltar para o Login</Text>
+          <Text style={styles.forgot}>Voltar para o Inicio</Text>
         </TouchableOpacity>
       </View>
     );
@@ -208,5 +210,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 15,
     fontWeight: 'bold',
+  },
+  infoText: {
+    textAlign: 'center',
+    color: '#FFF',
+    fontSize: 13,
+    marginTop: 15,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    marginTop: -20,
+    width: '80%'
   },
 });

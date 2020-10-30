@@ -17,8 +17,8 @@ export default class BemVindo extends React.Component {
             agora que conhecemos um pouco mais sobre você, gostariamos de saber 
             algumas informações sobre as suas propriedades. </Text>
 
-            <Text style={styles.textoInicial}>Na proxima tela você será redirecionado
-            para cadastrar as suas propriedades, e conhecermos um pouco melhor elas.</Text>
+            <Text style={styles.textoInicial}>Na proxima tela você poderá 
+            cadastrar as suas propriedades.</Text>
 
             <Text style={styles.textoInicial}>Assim que finalizar o cadastro nossa equipe
             entrará em contato, podendo dar prosseguimento a sua solicitação e 

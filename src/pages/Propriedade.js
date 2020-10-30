@@ -31,7 +31,7 @@ export default class Propriedade extends React.Component {
               onPress={() => {
                 this.props.navigation.navigate('NovaPropriedade');
               }}>
-              <Text style={styles.botaoText}>Nova Propriedade</Text>
+              <Text style={styles.botaoText}>Adicionar Propriedade</Text>
             </TouchableOpacity>
             
           </View>
