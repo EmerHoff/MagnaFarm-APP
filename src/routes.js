@@ -33,7 +33,19 @@ function Routes() {
         <Stack.Screen
           name="Inicio"
           component={Inicio}
-          options={{headerLeft: null, headerTitleAlign: 'center'}}
+          options={{
+            title: 'Início',
+            headerLeft: null,
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 20,
+            },
+            headerStyle: {
+              backgroundColor: '#2f703f',
+            },
+            headerTintColor: '#FFF',
+          }}
         />
         <Stack.Screen
           name="Propriedade"

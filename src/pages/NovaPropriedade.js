@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  AsyncStorage,
 } from 'react-native';
 
 import api from '../services/api';
@@ -16,16 +17,16 @@ export default class NovaPropriedade extends React.Component {
     comarca: '',
     matricula: '',
     area: '',
-    error: ''
+    error: '',
   };
 
-  handleCadastroPress = async () => {
+  handleSalvarPress = async () => {
     if (
       this.state.nome.length === 0 ||
       this.state.endereco.length === 0 ||
       this.state.comarca.length === 0 ||
       this.state.matricula.length === 0 ||
-      this.state.area === 0
+      this.state.area.length === 0
     ) {
       this.setState(
         {
@@ -35,27 +36,45 @@ export default class NovaPropriedade extends React.Component {
       );
     } else {
       try {
-        /*const response = await api.post('/usuario', {
-          login: this.state.login,
+        if (!this.state.area.includes(',') && !this.state.area.includes('.')) {
+          this.state.area = this.state.area + '.0';
+        } else if (this.state.area.includes(',')) {
+          this.state.area = this.state.area.replace(',', '.');
+        }
+
+        const id_usuario = await AsyncStorage.getItem('id_usuario');
+
+        if (!id_usuario) {
+          this.setState(
+            {
+              error:
+                'Não encontramos o ID do seu usuário, tente sair e entrar novamente em sua conta!',
+            },
+            () => false,
+          );
+        }
+        const response = await api.post('/propriedade', {
           nome: this.state.nome,
-          telefone: this.state.telefone,
-          senha: this.state.senha,
-          confirma_senha: this.state.confirma_senha,
+          endereco: this.state.endereco,
+          comarca: this.state.comarca,
+          matricula: this.state.matricula,
+          area: this.state.area,
+          id_usuario: id_usuario,
         });
 
         console.log(response.data);
 
         if (response.data.statusCode === 200) {
-          this.props.navigation.navigate('BemVindo');
+          this.props.navigation.navigate('Propriedade');
         } else {
           this.setState({
             error: response.data.message,
           });
-        }*/
+        }
       } catch (_err) {
         this.setState({
           error:
-            'Houve um problema com o cadastro, verifique se os todos os dados foram inseridos!',
+            'Houve um problema ao salvar as informações, verifique se os todos os dados foram inseridos corretamente!',
         });
       }
     }
@@ -65,7 +84,9 @@ export default class NovaPropriedade extends React.Component {
     return (
       <View style={styles.container}>
         <Text style={styles.menuText}>Nova Propriedade</Text>
-        <Text style={styles.infoText}>Preencha nos campos abaixo todas as informações sobre a propriedade.</Text>
+        <Text style={styles.infoText}>
+          Preencha nos campos abaixo todas as informações sobre a propriedade.
+        </Text>
         <View style={styles.inputView}>
           <TextInput
             style={styles.inputText}
@@ -134,12 +155,10 @@ export default class NovaPropriedade extends React.Component {
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>
         )}
+
         <TouchableOpacity
           style={styles.loginBtn}
-          //onPress={this.handleCadastroPress}>
-          onPress={() => {
-            this.props.navigation.navigate('Propriedade');
-          }}>
+          onPress={this.handleSalvarPress}>
           <Text style={styles.loginText}>Salvar</Text>
         </TouchableOpacity>
 
@@ -215,10 +234,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#FFF',
     fontSize: 13,
-    marginTop: 15,
     fontWeight: 'bold',
     marginBottom: 20,
     marginTop: -20,
-    width: '80%'
+    width: '80%',
   },
 });

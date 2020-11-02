@@ -42,17 +42,17 @@ export default class Login extends React.Component {
         () => false,
       );
     } else {
-      console.log('Tudo certo');
-
       try {
         const response = await api.post('/usuario/login', {
           login: this.state.email,
           senha: this.state.password,
         });
 
-        console.log(response.data);
-
         if (response.data.statusCode === 200) {
+          await AsyncStorage.setItem(
+            '@MagnaApp:id_usuario',
+            response.data.usuario.id,
+          );
           this.props.navigation.navigate('Inicio');
         } else {
           this.setState({
