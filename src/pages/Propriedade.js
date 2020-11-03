@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  AsyncStorage,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 
 import api from '../services/api';
 
@@ -22,7 +14,7 @@ export default class Propriedade extends React.Component {
   }
 
   loadPropriedades = async () => {
-    const id_usuario = await AsyncStorage.getItem('id_usuario');
+    /*const id_usuario = await AsyncStorage.getItem('id_usuario');
 
     if (!id_usuario) {
       this.setState(
@@ -32,9 +24,9 @@ export default class Propriedade extends React.Component {
         },
         () => false,
       );
-    }
+    }*/
 
-    const response = await api.get('/propriedade/listar/' + id_usuario);
+    const response = await api.get('/propriedade/listar/' + '10');
 
     const {propriedades} = response.data;
     this.setState({propriedades});

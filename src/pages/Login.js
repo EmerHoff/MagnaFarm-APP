@@ -6,12 +6,11 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  AsyncStorage,
   Image,
 } from 'react-native';
-import {NavigationActions} from 'react-navigation';
 
 import api from '../services/api';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Login extends React.Component {
   state = {
@@ -49,10 +48,10 @@ export default class Login extends React.Component {
         });
 
         if (response.data.statusCode === 200) {
-          await AsyncStorage.setItem(
-            '@MagnaApp:id_usuario',
-            response.data.usuario.id,
-          );
+          console.log(response.data.usuario.id);
+
+          await AsyncStorage.setItem('@save_id', response.data.usuario.id);
+
           this.props.navigation.navigate('Inicio');
         } else {
           this.setState({

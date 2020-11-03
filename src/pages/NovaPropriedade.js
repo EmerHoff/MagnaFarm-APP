@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  AsyncStorage,
 } from 'react-native';
 
 import api from '../services/api';
@@ -42,9 +41,7 @@ export default class NovaPropriedade extends React.Component {
           this.state.area = this.state.area.replace(',', '.');
         }
 
-        const id_usuario = await AsyncStorage.getItem('id_usuario');
-
-        if (!id_usuario) {
+        /*if (!id_usuario) {
           this.setState(
             {
               error:
@@ -52,14 +49,14 @@ export default class NovaPropriedade extends React.Component {
             },
             () => false,
           );
-        }
+        }*/
         const response = await api.post('/propriedade', {
           nome: this.state.nome,
           endereco: this.state.endereco,
           comarca: this.state.comarca,
           matricula: this.state.matricula,
           area: this.state.area,
-          id_usuario: id_usuario,
+          id_usuario: '10',
         });
 
         console.log(response.data);
