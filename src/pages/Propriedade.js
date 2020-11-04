@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 
 import api from '../services/api';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Propriedade extends React.Component {
   state = {
@@ -14,7 +15,7 @@ export default class Propriedade extends React.Component {
   }
 
   loadPropriedades = async () => {
-    /*const id_usuario = await AsyncStorage.getItem('id_usuario');
+    const id_usuario = await AsyncStorage.getItem('@save_id');
 
     if (!id_usuario) {
       this.setState(
@@ -24,22 +25,22 @@ export default class Propriedade extends React.Component {
         },
         () => false,
       );
-    }*/
+    }
 
-    const response = await api.get('/propriedade/listar/' + '10');
+    const response = await api.get('/propriedade/listar/' + id_usuario);
 
     const {propriedades} = response.data;
     this.setState({propriedades});
   };
 
   renderItem = ({item}) => (
-    <View style={styles.listaContainer}>
+    
       <View style={styles.propriedadeContainer}>
         <Text style={styles.propriedadeNome}>{item.nome}</Text>
-        <Text style={styles.propriedadeArea}>Área: {item.area} hectares</Text>
+        <Text style={styles.propriedadeArea}>Área: {item.area.toString()} hectares</Text>
         <Text style={styles.propriedadeArea}>{item.endereco}</Text>
       </View>
-    </View>
+    
   );
 
   render() {
@@ -47,12 +48,13 @@ export default class Propriedade extends React.Component {
       <View style={styles.container}>
         <Text style={styles.logo}>Propriedades</Text>
 
-        <FlatList
-          data={this.state.propriedades}
-          keyExtractor={(item) => item.id}
-          renderItem={this.renderItem}
-        />
-
+        <View style={styles.listaContainer}>
+          <FlatList
+            data={this.state.propriedades}
+            keyExtractor={(item) => item.id}
+            renderItem={this.renderItem}
+          />
+        </View>
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>
         )}
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#2e7d42',
     width: '80%',
-    height: '80%',
+    height: '60%',
     borderWidth: 1,
     borderColor: '#FFF',
     borderRadius: 5,

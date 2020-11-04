@@ -50,7 +50,7 @@ export default class Login extends React.Component {
         if (response.data.statusCode === 200) {
           console.log(response.data.usuario.id);
 
-          await AsyncStorage.setItem('@save_id', response.data.usuario.id);
+          await AsyncStorage.setItem('@save_id', response.data.usuario.id.toString());
 
           this.props.navigation.navigate('Inicio');
         } else {
