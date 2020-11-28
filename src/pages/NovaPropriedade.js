@@ -8,16 +8,18 @@ import {
 } from 'react-native';
 
 import api from '../services/api';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class NovaPropriedade extends React.Component {
-  state = {
-    nome: '',
-    endereco: '',
-    comarca: '',
-    matricula: '',
-    area: '',
-    error: '',
-  };
+    state = {
+      nome: '',
+      endereco: '',
+      comarca: '',
+      matricula: '',
+      area: '',
+      error: '',
+      selectedFile:'',
+    }
 
   handleSalvarPress = async () => {
     if (
@@ -53,6 +55,8 @@ export default class NovaPropriedade extends React.Component {
           );
         }
 
+        console.log(this.state.nome);
+
         const response = await api.post('/propriedade', {
           nome: this.state.nome,
           endereco: this.state.endereco,
@@ -77,6 +81,32 @@ export default class NovaPropriedade extends React.Component {
       }
     }
   };
+
+  handleInputChange(event) {
+    this.setState({
+        selectedFile: event.target.files[0],
+      })
+  }
+
+
+  submitFile = async() => {
+      const data = new FormData() 
+      data.append('file', this.state.selectedFile)
+      console.warn(this.state.selectedFile);
+
+      api.post('/usuario/arquivo', data, {
+      })
+      .then(res => {
+          this.setState(
+            {
+              error:
+                'Documento anexado com sucesso!',
+            },
+            () => false,
+          );
+          console.warn(res);
+      })
+  }
 
   render() {
     return (
@@ -148,7 +178,10 @@ export default class NovaPropriedade extends React.Component {
           />
         </View>
 
-        <TextInput style={styles.inputText}>Anexar Documento</TextInput>
+        <TouchableOpacity
+          onPress={this.submitFile}>
+          <Text style={styles.inputText}>Anexar Documento</Text>
+        </TouchableOpacity>
 
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>

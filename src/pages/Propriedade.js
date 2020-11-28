@@ -35,7 +35,9 @@ export default class Propriedade extends React.Component {
 
   renderItem = ({item}) => (
     
-      <View style={styles.propriedadeContainer}>
+      <View style={styles.propriedadeContainer} onPress={() => {
+        this.props.navigation.navigate('AbrirPropriedade', { propriedade: item } );
+        }}>
         <Text style={styles.propriedadeNome}>{item.nome}</Text>
         <Text style={styles.propriedadeArea}>Área: {item.area.toString()} hectares</Text>
         <Text style={styles.propriedadeArea}>{item.endereco}</Text>

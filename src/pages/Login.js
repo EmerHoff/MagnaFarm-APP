@@ -42,10 +42,18 @@ export default class Login extends React.Component {
       );
     } else {
       try {
+        console.log(this.state.email);
+
         const response = await api.post('/usuario/login', {
           login: this.state.email,
           senha: this.state.password,
-        });
+        }).then(res => {
+            console.log(res);
+            console.log(res.data)
+        })
+        .catch(error => console.log(error));
+
+        console.log(response);
 
         if (response.data.statusCode === 200) {
           console.log(response.data.usuario.id);

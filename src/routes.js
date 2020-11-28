@@ -8,6 +8,7 @@ import Cadastro from './pages/Cadastro';
 import BemVindo from './pages/BemVindo';
 import Propriedade from './pages/Propriedade';
 import NovaPropriedade from './pages/NovaPropriedade';
+import AbrirPropriedade from './pages/AbrirPropriedade';
 
 const Stack = createStackNavigator();
 
@@ -55,6 +56,11 @@ function Routes() {
         <Stack.Screen
           name="NovaPropriedade"
           component={NovaPropriedade}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="AbrirPropriedade"
+          component={AbrirPropriedade}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
