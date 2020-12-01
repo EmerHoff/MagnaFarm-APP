@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import api from '../services/api';
-
+import AsyncStorage from '@react-native-community/async-storage';
 export default class NovaPropriedade extends React.Component {
   state = {
     nome: '',

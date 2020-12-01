@@ -33,12 +33,24 @@ export default class Propriedade extends React.Component {
     this.setState({propriedades});
   };
 
+  setarPropriedade = async (id) => {
+    await AsyncStorage.setItem('@open_propriedade', id.toString());
+    this.props.navigation.navigate('AbrirPropriedade');
+  }
+
   renderItem = ({item}) => (
     
       <View style={styles.propriedadeContainer}>
         <Text style={styles.propriedadeNome}>{item.nome}</Text>
         <Text style={styles.propriedadeArea}>Área: {item.area.toString()} hectares</Text>
         <Text style={styles.propriedadeArea}>{item.endereco}</Text>
+        <TouchableOpacity
+          style={styles.botaoAdicionar}
+          onPress={() => {
+            this.setarPropriedade(item.id)
+          }}>
+          <Text style={styles.botaoText}>Visualizar</Text>
+        </TouchableOpacity>
       </View>
     
   );
@@ -51,7 +63,7 @@ export default class Propriedade extends React.Component {
         <View style={styles.listaContainer}>
           <FlatList
             data={this.state.propriedades}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={this.renderItem}
           />
         </View>

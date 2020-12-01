@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import api from '../services/api';
-
+import AsyncStorage from '@react-native-community/async-storage';
 export default class Cadastro extends React.Component {
   state = {
     nome: '',
@@ -63,6 +63,7 @@ export default class Cadastro extends React.Component {
         console.log(response.data);
 
         if (response.data.statusCode === 200) {
+          await AsyncStorage.setItem('@save_id', response.data.usuario.id.toString());
           this.props.navigation.navigate('BemVindo');
         } else {
           this.setState({
