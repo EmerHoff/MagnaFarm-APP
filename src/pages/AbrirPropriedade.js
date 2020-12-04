@@ -9,11 +9,22 @@ import {
 
 import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {Overlay, PROVIDER_GOOGLE} from 'react-native-maps';
 
 export default class AbrirPropriedade extends React.Component {
   state = {
-    id_propriedade: ''
+    id_propriedade: '',
+    mapaCentro: {
+      latitude: -24.8565,
+      longitude: -53.31,
+      latitudeDelta: 0.0222,
+      longitudeDelta: 0.0421,
+    },
+    mapaTalhao: 'https://padilharquitetura.com.br/wp-content/uploads/2019/03/MapaIsodeclividadesFadecitSite-1.jpg',
+    boundsTalhao: [
+      [-24.8465,-53.3165],
+      [-24.8675, -53.30]
+    ]
   }
 
   getPropriedade = async () => {
@@ -24,16 +35,19 @@ export default class AbrirPropriedade extends React.Component {
 
   render() {
     return (
+      <View style={styles.container}>
         <MapView
-        style={ styles.map }
-        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
+          style={ styles.map }
+          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+          initialRegion={this.state.mapaCentro}
+          mapType={'satellite'}
+        >
+        <Overlay
+          image={this.state.mapaTalhao}
+          bounds={this.state.boundsTalhao}
         />
+        </MapView>
+      </View>  
     );
   }
 }
@@ -45,12 +59,16 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    padding: 20
   },
   container: {
     flex: 1,
     backgroundColor: '#3c9c54',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  mapaSquare: {
+    padding: 20
   },
   menuText: {
     fontWeight: 'bold',
