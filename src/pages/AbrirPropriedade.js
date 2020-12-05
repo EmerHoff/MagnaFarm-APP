@@ -14,17 +14,21 @@ import MapView, {Overlay, PROVIDER_GOOGLE} from 'react-native-maps';
 export default class AbrirPropriedade extends React.Component {
   state = {
     id_propriedade: '',
-    mapaCentro: {
+    centroPropriedade: {
       latitude: -24.8565,
       longitude: -53.31,
       latitudeDelta: 0.0222,
       longitudeDelta: 0.0421,
     },
-    mapaTalhao: 'https://padilharquitetura.com.br/wp-content/uploads/2019/03/MapaIsodeclividadesFadecitSite-1.jpg',
-    boundsTalhao: [
+    mapaPropriedade: 'https://padilharquitetura.com.br/wp-content/uploads/2019/03/MapaIsodeclividadesFadecitSite-1.jpg',
+    limitesPropriedade: [
       [-24.8465,-53.3165],
       [-24.8675, -53.30]
     ]
+  }
+
+  componentDidMount() {
+    this.getPropriedade();
   }
 
   getPropriedade = async () => {
@@ -33,18 +37,25 @@ export default class AbrirPropriedade extends React.Component {
     console.log('get id');
   }
 
+  listarTalhoes = async () => {
+    const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
+    const response = await api.get('/talhao/listar/' + id_propriedade);
+
+    const { talhoes } = response.data.talhoes;
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <MapView
           style={ styles.map }
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-          initialRegion={this.state.mapaCentro}
+          initialRegion={this.state.centroPropriedade}
           mapType={'satellite'}
         >
         <Overlay
-          image={this.state.mapaTalhao}
-          bounds={this.state.boundsTalhao}
+          image={this.state.mapaPropriedade}
+          bounds={this.state.limitesPropriedade}
         />
         </MapView>
       </View>  
