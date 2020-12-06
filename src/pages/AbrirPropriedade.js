@@ -47,17 +47,22 @@ export default class AbrirPropriedade extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <MapView
-          style={ styles.map }
-          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-          initialRegion={this.state.centroPropriedade}
-          mapType={'satellite'}
-        >
-        <Overlay
-          image={this.state.mapaPropriedade}
-          bounds={this.state.limitesPropriedade}
-        />
-        </MapView>
+        <View style={styles.map}>
+          <MapView
+            style={ styles.map }
+            provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+            initialRegion={this.state.centroPropriedade}
+            mapType={'satellite'}
+          >
+            <Overlay
+              image={this.state.mapaPropriedade}
+              bounds={this.state.limitesPropriedade}
+            />
+          </MapView>
+        </View>
+        <View style={styles.conteudoTela}>
+          <Text>Aquii</Text>
+        </View>
       </View>  
     );
   }
@@ -69,8 +74,11 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom: '15%',
     padding: 20
+  },
+  conteudoTela: {
+    top: '75%'
   },
   container: {
     flex: 1,

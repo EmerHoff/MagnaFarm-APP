@@ -16,6 +16,14 @@ export default class Inicio extends React.Component {
         <TouchableOpacity
           style={styles.botaoInicio}
           onPress={() => {
+            this.props.navigation.navigate('Talhões');
+          }}>
+          <Text style={styles.botaoTexto}>Talões</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botaoInicio}
+          onPress={() => {
             this.props.navigation.navigate('Inicio');
           }}>
           <Text style={styles.botaoTexto}>Perfil</Text>
@@ -27,14 +35,6 @@ export default class Inicio extends React.Component {
             this.props.navigation.navigate('Propriedade');
           }}>
           <Text style={styles.botaoTexto}>Configurações</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.botaoInicio}
-          onPress={() => {
-            this.props.navigation.navigate('Inicio');
-          }}>
-          <Text style={styles.botaoTexto}>Sair</Text>
         </TouchableOpacity>
       </View>
     );

@@ -9,6 +9,7 @@ import BemVindo from './pages/BemVindo';
 import Propriedade from './pages/Propriedade';
 import NovaPropriedade from './pages/NovaPropriedade';
 import AbrirPropriedade from './pages/AbrirPropriedade';
+import AbrirTalhao from './pages/AbrirTalhao';
 
 const Stack = createStackNavigator();
 
@@ -61,6 +62,11 @@ function Routes() {
         <Stack.Screen
           name="AbrirPropriedade"
           component={AbrirPropriedade}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="AbrirTalhao"
+          component={AbrirTalhao}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
