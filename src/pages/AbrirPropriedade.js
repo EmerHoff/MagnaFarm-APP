@@ -12,67 +12,30 @@ import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
 import MapView, {Callout, Geojson, Marker, Overlay, PROVIDER_GOOGLE} from 'react-native-maps';
 import RNFS from "react-native-fs";
+
+const mapaGeojson = {};
 export default class AbrirPropriedade extends React.Component {
   state = {
     id_propriedade: '',
     talhoes: [],
     error: '',
     centroPropriedade: {
-      latitude: -24.8465,
-      longitude: -53.3165,
+      latitude: -15.4265,
+      longitude: -54.8170,
       latitudeDelta: 0.0222,
       longitudeDelta: 0.0422,
     },
-    //mapaPropriedade: 'https://padilharquitetura.com.br/wp-content/uploads/2019/03/MapaIsodeclividadesFadecitSite-1.jpg',
     limitesPropriedade: [
       [-24.8465,-53.3165],
       [-24.8675, -53.30]
     ],
-    mapaPropriedade: ''
+    mapaPropriedade: {},
   }
 
   componentDidMount() {
-    //this.loadMapa();
-    this.readFile("../../storage/prod_1/faz_1/mapa.txt");
-    this.listarTalhoes();
+    this.loadMapa();
+    //this.listarTalhoes();
   }
-
-  readFile = async (myFile) => {
-    /*try {
-      const path = MyPath + "/geojson_mapa.txt";
-      const mapa = await RNFS.readFile(path, "utf8");
-      this.setState({ mapaPropriedade: mapa });
-      //const contents = await RNFS.readFile(path, "utf8");
-      //return("" + contents);
-    } catch (e) {
-      alert("" + e);
-    }*/
-
-    /*RNFS.readFileAssets(MyPath).then((res) => {
-      console.log('read file res: ', res);
-    })*/
-
-    /*RNFS.readFile(MyPath)
-      .then((contents) => {
-        var contentString = contents.toString();
-        console.log(contentString);
-      })*/
-
-      let asset_content = null;
-      try {
-        await RNFS.readFile(myFile, 'utf8')
-            .then((data) => {
-              asset_content = data;
-              console.log("got data: ", data);
-            })
-            .catch((e) => {
-              console.error("got error: ", e);
-            })
-        } catch (err) {
-          console.log('ERROR:', err);
-      }
-  };
-
 
   loadMapa = async () => {
     const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
@@ -87,13 +50,18 @@ export default class AbrirPropriedade extends React.Component {
       );
     }
 
-    const response = await api.get('/mapa/propriedade/' + id_propriedade);
-    const { latitude, longitude, latitudeDelta, longitudeDelta, enderecoMapa } = response.data;
+    const response = await api.post('/arquivo/geojson', {
+      caminho: "./storage/geojson_teste.txt",
+    });
 
-    this.state.centroPropriedade.latitude = latitude;
-    this.state.centroPropriedade.latitude = longitude;
-    this.state.mapaPropriedade = enderecoMapa;
-    this.state.limitesPropriedade = [[], []];
+    this.setState({ mapaPropriedade: response.data })
+
+    //console.log(this.state.mapaPropriedade);
+
+    //mapaGeojson = response.data;
+
+    console.log(response.data);
+
   }
 
   listarTalhoes = async () => {
@@ -120,16 +88,6 @@ export default class AbrirPropriedade extends React.Component {
     this.props.navigation.navigate('AbrirTalhao');
   }
 
-  /*
-  <Geojson
-    geojson={this.state.mapaPropriedade} 
-    strokeColor="white"
-    fillColor="red"
-    strokeWidth={2}
-    zIndex={1}
-  />
-  */
-
   render() {
     return (
       <View style={styles.container}>
@@ -140,8 +98,14 @@ export default class AbrirPropriedade extends React.Component {
           mapType={'satellite'}
         >
 
-        
-            
+        <Geojson
+          geojson={this.state.mapaPropriedade} 
+          strokeColor="white"
+          fillColor="red"
+          strokeWidth={2}
+          zIndex={1}
+        />
+
         <Marker
           coordinate={{ latitude: -24.8465, longitude: -53.3165 }}
           title={'Talhão Fundo'}
