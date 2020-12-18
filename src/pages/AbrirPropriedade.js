@@ -20,7 +20,7 @@ export default class AbrirPropriedade extends React.Component {
     talhoes: [],
     error: '',
     centroPropriedade: {
-      latitude: -15.4265,
+      latitude: -23.4265,
       longitude: -54.8170,
       latitudeDelta: 0.0222,
       longitudeDelta: 0.0422,
@@ -29,12 +29,61 @@ export default class AbrirPropriedade extends React.Component {
       [-24.8465,-53.3165],
       [-24.8675, -53.30]
     ],
-    mapaPropriedade: {},
+    mapaPropriedade: {
+      "type":"FeatureCollection",
+      "name":"default",
+      "crs":{
+          "type":"name",
+          "properties":{
+            "name":"urn:ogc:def:crs:OGC:1.3:CRS84"
+          }
+      },
+      "features":[
+        {
+          "type":"Feature",
+          "properties":{
+              "Name":null,
+              "description":null,
+              "gridcode":1.0
+          },
+        }
+      ]
+    },
   }
 
   componentDidMount() {
     this.loadMapa();
     //this.listarTalhoes();
+  }
+
+  saveFile = async (content, name) => {
+    const path = RNFS.DocumentDirectoryPath + '/magnafarm/';
+
+    // write the file
+    RNFS.writeFile(path + name, content, 'utf8')
+    .then((success) => {
+      console.log('FILE WRITTEN: ' + name);
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+  }
+
+  atualizaCoordenadas(geojson) {
+    var string = JSON.stringify(geojson);
+    var objectValue = JSON.parse(string);
+    var coordinates = objectValue['features'][0]['geometry']['coordinates'][0][0][0];
+
+    if (coordinates) {
+      this.setState({ centroPropriedade: {
+          latitude: coordinates[1],
+          longitude: coordinates[0],
+          latitudeDelta: 0.0222,
+          longitudeDelta: 0.0422,
+        }
+      });
+      console.log(coordinates);
+    }
   }
 
   loadMapa = async () => {
@@ -54,14 +103,10 @@ export default class AbrirPropriedade extends React.Component {
       caminho: "./storage/geojson_teste.txt",
     });
 
-    this.setState({ mapaPropriedade: response.data })
-
-    //console.log(this.state.mapaPropriedade);
-
-    //mapaGeojson = response.data;
-
-    console.log(response.data);
-
+    const geojson = response.data;
+    this.setState({ mapaPropriedade: geojson });
+    this.saveFile(geojson, 'prop_' + id_propriedade + '_mapa.txt');
+    this.atualizaCoordenadas(geojson);
   }
 
   listarTalhoes = async () => {
@@ -94,7 +139,9 @@ export default class AbrirPropriedade extends React.Component {
         <MapView
           style={ styles.map }
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-          initialRegion={this.state.centroPropriedade}
+          region={this.state.centroPropriedade}
+          showsMyLocationButton={true}
+          showsUserLocation={true}
           mapType={'satellite'}
         >
 
