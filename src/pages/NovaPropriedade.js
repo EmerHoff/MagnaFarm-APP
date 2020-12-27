@@ -9,6 +9,9 @@ import {
 
 import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
+import DocumentPicker from 'react-native-document-picker';
+
+//const [singleFile, setSingleFile] = useState(null);
 export default class NovaPropriedade extends React.Component {
   state = {
     nome: '',
@@ -17,6 +20,7 @@ export default class NovaPropriedade extends React.Component {
     matricula: '',
     area: '',
     error: '',
+    selectedFile: '',
   };
 
   handleSalvarPress = async () => {
@@ -63,6 +67,7 @@ export default class NovaPropriedade extends React.Component {
         });
 
         if (response.data.statusCode === 200) {
+          uploadImage();
           this.props.navigation.navigate('Propriedade');
         } else {
           this.setState({
@@ -74,6 +79,73 @@ export default class NovaPropriedade extends React.Component {
           error:
             'Houve um problema ao salvar as informações, verifique se os todos os dados foram inseridos corretamente!',
         });
+      }
+    }
+  };
+
+  uploadImage = async () => {
+    // Check if any file is selected or not
+    if (this.state.selectedFile === '') {
+
+      /*const fileToUpload = singleFile;
+      const data = new FormData();
+      data.append('name', 'file_send');
+      data.append('file_attachment', fileToUpload);
+
+      let res = await fetch(
+        'http://localhost/usuario/arquivo',
+        {
+          method: 'post',
+          body: data,
+          headers: {
+            'Content-Type': 'multipart/form-data; ',
+          },
+        }
+      );
+      let responseJson = await res.json();
+      if (responseJson.status == 1) {
+        alert('Upload Successful');
+      }*/
+
+      const data = new FormData();
+      data.append('name', 'file_send');
+      data.append('file', this.state.selectedFile);
+      //data.append('file', this.state.selectedFile);
+
+      api.post('/usuario/arquivo', data, { // receive two parameter endpoint url ,form data 
+      })
+      .then(res => { // then print response status
+          console.warn(res);
+      });
+
+
+    } else {
+      // If no file selected the show alert
+      alert('Please Select File first');
+    }
+  };
+
+  selectFile = async () => {
+    // Opening Document Picker to select one file
+    try {
+      const res = await DocumentPicker.pick({
+        // Provide which type of file you want user to pick
+        type: [DocumentPicker.types.allFiles],
+      });
+      // Printing the log realted to the file
+      console.log('res : ' + JSON.stringify(res));
+      // Setting the state to show single file attributes
+      this.setState({ selectFile: res });
+    } catch (err) {
+      this.setState({ selectFile: '' });
+      // Handling any exception (If any)
+      if (DocumentPicker.isCancel(err)) {
+        // If user canceled the document selection
+        alert('Seleção de documento cancelada!');
+      } else {
+        // For Unknown Error
+        alert('Unknown Error: ' + JSON.stringify(err));
+        throw err;
       }
     }
   };
@@ -148,7 +220,12 @@ export default class NovaPropriedade extends React.Component {
           />
         </View>
 
-        <TextInput style={styles.inputText}>Anexar Documento</TextInput>
+        <TouchableOpacity
+          style={styles.fileBtn}
+          activeOpacity={0.5}
+          onPress={this.selectFile}>
+          <Text style={styles.fileText}>Anexar Documento</Text>
+        </TouchableOpacity>
 
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>
@@ -213,6 +290,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 30,
     marginBottom: 10,
+  },
+  fileBtn: {
+    width: '60%',
+    backgroundColor: '#374d34',
+    borderRadius: 25,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  fileText: {
+    height: 20,
+    color: '#ebf3e8',
   },
   loginText: {
     color: '#ebf3e8',
