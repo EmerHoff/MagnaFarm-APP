@@ -17,11 +17,11 @@ const mapaGeojson = {};
 export default class AbrirPropriedade extends React.Component {
   state = {
     id_propriedade: '',
-    talhoes: [],
+    talhoes: '',
     error: '',
     centroPropriedade: {
-      latitude: -23.4265,
-      longitude: -54.8170,
+      latitude: -15.4251733049364,
+      longitude: -54.8167397853051,
       latitudeDelta: 0.0222,
       longitudeDelta: 0.0422,
     },
@@ -53,7 +53,7 @@ export default class AbrirPropriedade extends React.Component {
 
   componentDidMount() {
     this.loadMapa();
-    //this.listarTalhoes();
+    this.listarTalhoes();
   }
 
   saveFile = async (content, name) => {
@@ -106,7 +106,7 @@ export default class AbrirPropriedade extends React.Component {
     const geojson = response.data;
     this.setState({ mapaPropriedade: geojson });
     this.saveFile(geojson, 'prop_' + id_propriedade + '_mapa.txt');
-    this.atualizaCoordenadas(geojson);
+    //this.atualizaCoordenadas(geojson);
   }
 
   listarTalhoes = async () => {
@@ -122,10 +122,12 @@ export default class AbrirPropriedade extends React.Component {
       );
     }
 
-    const response = await api.get('/talhao/listar/' + id_propriedade);
+    const response = await api.post('/arquivo/geojson', {
+      caminho: "./storage/geojson_teste2.txt",
+    });
 
-    const { talhoes } = response.data;
-    this.setState({talhoes});
+    const geojson = response.data;
+    this.setState({ talhoes: geojson });
   }
 
   setarTalhao = async (id) => {
@@ -145,12 +147,20 @@ export default class AbrirPropriedade extends React.Component {
           mapType={'satellite'}
         >
 
-        <Geojson
+        <Geojson //Mapa da propriedade
           geojson={this.state.mapaPropriedade} 
           strokeColor="white"
           fillColor="red"
           strokeWidth={2}
           zIndex={1}
+        />
+
+        <Geojson //Mapa da propriedade
+          geojson={this.state.talhoes} 
+          strokeColor="black"
+          fillColor="green"
+          strokeWidth={2}
+          zIndex={2}
         />
 
         <Marker

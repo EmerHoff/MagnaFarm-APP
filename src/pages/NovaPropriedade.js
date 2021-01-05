@@ -67,7 +67,7 @@ export default class NovaPropriedade extends React.Component {
         });
 
         if (response.data.statusCode === 200) {
-          uploadImage();
+          //uploadImage();
           this.props.navigation.navigate('Propriedade');
         } else {
           this.setState({
