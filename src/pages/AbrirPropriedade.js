@@ -10,25 +10,22 @@ import {
 
 import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
-import MapView, {Callout, Geojson, Marker, Overlay, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {Callout, Geojson, Marker, Overlay, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
 import RNFS from "react-native-fs";
 
 const mapaGeojson = {};
 export default class AbrirPropriedade extends React.Component {
   state = {
     id_propriedade: '',
-    talhoes: '',
+    id_usuario: '',
+    talhoes: [],
     error: '',
     centroPropriedade: {
-      latitude: -15.4251733049364,
-      longitude: -54.8167397853051,
+      latitude: -15.415102320112714,
+      longitude: -54.818083435998041,
       latitudeDelta: 0.0222,
       longitudeDelta: 0.0422,
     },
-    limitesPropriedade: [
-      [-24.8465,-53.3165],
-      [-24.8675, -53.30]
-    ],
     mapaPropriedade: {
       "type":"FeatureCollection",
       "name":"default",
@@ -72,7 +69,7 @@ export default class AbrirPropriedade extends React.Component {
   atualizaCoordenadas(geojson) {
     var string = JSON.stringify(geojson);
     var objectValue = JSON.parse(string);
-    var coordinates = objectValue['features'][0]['geometry']['coordinates'][0][0][0];
+    var coordinates = objectValue['features'][0]['geometry']['coordinates'][0][0];
 
     if (coordinates) {
       this.setState({ centroPropriedade: {
@@ -82,52 +79,52 @@ export default class AbrirPropriedade extends React.Component {
           longitudeDelta: 0.0422,
         }
       });
-      console.log(coordinates);
     }
   }
 
   loadMapa = async () => {
     const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
+    const id_usuario = await AsyncStorage.getItem('@save_id');
 
-    if (!id_propriedade) {
+    if (!id_propriedade || !id_usuario) {
       this.setState(
         {
           error:
-            'Não encontramos o ID do sua propriedade, tente sair e entrar novamente dela!',
+            'Não encontramos o ID do sua propriedade/usuário, tente sair e entrar novamente dela!',
         },
         () => false,
       );
     }
 
     const response = await api.post('/arquivo/geojson', {
-      caminho: "./storage/geojson_teste.txt",
+      caminho: id_usuario + "/" + id_propriedade + "/farm_json.txt",
     });
 
     const geojson = response.data;
     this.setState({ mapaPropriedade: geojson });
     this.saveFile(geojson, 'prop_' + id_propriedade + '_mapa.txt');
-    //this.atualizaCoordenadas(geojson);
+    this.atualizaCoordenadas(geojson);
   }
 
   listarTalhoes = async () => {
     const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
+    const id_usuario = await AsyncStorage.getItem('@save_id');
 
-    if (!id_propriedade) {
+    if (!id_propriedade || !id_usuario) {
       this.setState(
         {
           error:
-            'Não encontramos o ID do sua propriedade, tente sair e entrar novamente dela!',
+            'Não encontramos o ID do sua propriedade/usuário, tente sair e entrar novamente dela!',
         },
         () => false,
       );
     }
 
-    const response = await api.post('/arquivo/geojson', {
-      caminho: "./storage/geojson_teste2.txt",
+    const response = await api.post('/arquivo/polyline/talhoes', {
+      caminho: id_usuario + "/" + id_propriedade + "/",
     });
 
-    const geojson = response.data;
-    this.setState({ talhoes: geojson });
+    this.setState({ talhoes: response.data });
   }
 
   setarTalhao = async (id) => {
@@ -150,26 +147,25 @@ export default class AbrirPropriedade extends React.Component {
         <Geojson //Mapa da propriedade
           geojson={this.state.mapaPropriedade} 
           strokeColor="white"
-          fillColor="red"
-          strokeWidth={2}
-          zIndex={1}
-        />
-
-        <Geojson //Mapa da propriedade
-          geojson={this.state.talhoes} 
-          strokeColor="black"
-          fillColor="green"
           strokeWidth={2}
           zIndex={2}
         />
-
-        <Marker
-          coordinate={{ latitude: -24.8465, longitude: -53.3165 }}
-          title={'Talhão Fundo'}
-          description={'Esse talhão esta localizado no fundo'}
-          opacity={0.5}
-          //image={require('../icone.jpg')}
-        />
+        
+        {
+          this.state.talhoes.map((talhao, index) => {
+            return (
+              <Polygon
+                key={index}
+                coordinates={talhao.coordenadas}
+                strokeColor="red"
+                strokeWidth={3}
+                zIndex={1}
+                tappable={true}
+                onPress={() => this.setarTalhao(talhao.talhao)}
+              />
+            );
+          })
+        }
 
         </MapView>
         {this.state.error.length !== 0 && (
