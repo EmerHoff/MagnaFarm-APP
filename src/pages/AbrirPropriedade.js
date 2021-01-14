@@ -12,6 +12,8 @@ import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
 import MapView, {Callout, Geojson, Marker, Overlay, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
 import RNFS from "react-native-fs";
+import Connection from '../services/connection';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 const mapaGeojson = {};
 export default class AbrirPropriedade extends React.Component {
@@ -96,13 +98,32 @@ export default class AbrirPropriedade extends React.Component {
       );
     }
 
-    const response = await api.post('/arquivo/geojson', {
-      caminho: id_usuario + "/" + id_propriedade + "/farm_json.txt",
-    });
+    const path = RNFS.DocumentDirectoryPath + '/magnafarm/';
+    const data = await RNFS.readFile(path + id_usuario + "_" + id_propriedade + '_farm_json.txt', 'utf8');
 
-    const geojson = response.data;
+    const geojson = {
+        type: "FeatureCollection",
+        name: "teste",
+        crs: {
+            type: "name",
+            properties: {
+                name: "urn:ogc:def:crs:OGC:1.3:CRS84"
+            }
+        },
+        features: [
+            {
+                type: "Feature",
+                properties: {
+                    Name: null,
+                    description: null,
+                    gridcode: 1
+                },
+                geometry: JSON.parse(data.toString())
+            }
+        ]
+    };
+
     this.setState({ mapaPropriedade: geojson });
-    this.saveFile(geojson, 'prop_' + id_propriedade + '_mapa.txt');
     this.atualizaCoordenadas(geojson);
   }
 

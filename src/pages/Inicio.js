@@ -1,7 +1,80 @@
 import React from 'react';
 import {View, Text, Button, StyleSheet, TouchableOpacity} from 'react-native';
-
+import Connection from '../services/connection';
+import api from '../services/api';
+import RNFS from "react-native-fs";
+import AsyncStorage from '@react-native-community/async-storage';
 export default class Inicio extends React.Component {
+
+  componentDidMount() {
+    if (Connection.isConnected()) {
+      this.synchronizeUser();
+    }
+  }
+
+  synchronizeUser = async () => {
+    const id_usuario = await AsyncStorage.getItem('@save_id');
+
+    if (!id_usuario) {
+      return;
+    }
+
+    //salvar os arquivos da propriedade
+    const responsePropriedade = await api.post(
+      '/arquivo/sincronizar/propriedades',
+      {
+        caminho: id_usuario + '/',
+      },
+    );
+
+    if (responsePropriedade.data) {
+      const propriedades = responsePropriedade.data.propriedades;
+
+      propriedades.forEach(async (propriedade) => {
+        //salva os arquivos da propriedade
+        propriedade.arquivos.forEach(async (arquivo) => {
+          this.saveFile(
+            arquivo.data,
+            id_usuario + '_prop' + propriedade.nome + '_' + arquivo.nome,
+          );
+        });
+
+        //busca os arquivos dos talhoes
+        const responseTalhoes = await api.post('/arquivo/sincronizar/talhoes', {
+          caminho: id_usuario + '/' + propriedade.nome + '/',
+        });
+
+        if (responseTalhoes.data) {
+          //para cada talhao salva os arquivos
+          const talhoes = responseTalhoes.data.talhoes;
+          talhoes.forEach(async (talhao) => {
+            talhao.arquivos.forEach(async (arquivo) => {
+              this.saveFile(
+                arquivo.data,
+                id_usuario + '_prop' + propriedade.nome + '_th' + talhao.nome + '_' + arquivo.nome,
+              );
+            });
+          });
+        }
+      });
+    }
+  };
+
+  saveFile = async (content, name) => {
+    const path = RNFS.DocumentDirectoryPath + '/magnafarm/';
+
+    // write the file
+    RNFS.writeFile(path + name, content, 'utf8');
+  };
+
+  readFile = async (name) => {
+    const path = RNFS.DocumentDirectoryPath + '/magnafarm/';
+
+    // write the file
+    const data = await RNFS.readFile(path + name, 'utf8');
+    console.log('data file: ' + data.toString());
+  };
+
   render() {
     return (
       <View style={styles.container}>
