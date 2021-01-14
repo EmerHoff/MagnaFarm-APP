@@ -5,13 +5,20 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  FlatList
+  FlatList,
 } from 'react-native';
 
 import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
-import MapView, {Callout, Geojson, Marker, Overlay, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
-import RNFS from "react-native-fs";
+import MapView, {
+  Callout,
+  Geojson,
+  Marker,
+  Overlay,
+  Polygon,
+  PROVIDER_GOOGLE,
+} from 'react-native-maps';
+import RNFS from 'react-native-fs';
 
 export default class AbrirTalhao extends React.Component {
   state = {
@@ -24,45 +31,48 @@ export default class AbrirTalhao extends React.Component {
       longitudeDelta: 0.0422,
     },
     mapaTalhao: {
-      "type":"FeatureCollection",
-      "name":"default",
-      "crs":{
-          "type":"name",
-          "properties":{
-            "name":"urn:ogc:def:crs:OGC:1.3:CRS84"
-          }
+      'type':'FeatureCollection',
+      'name':'default',
+      'crs':{
+        type: 'name',
+        properties: {
+          name: 'urn:ogc:def:crs:OGC:1.3:CRS84',,
+        },
       },
-      "features":[
+      'features':[
         {
-          "type":"Feature",
-          "properties":{
-              "Name":null,
-              "description":null,
-              "gridcode":1.0
+          'type':'Feature',
+          'properties':{
+            Name: null,
+            description: null,
+            gridcode: 1.0,
           },
-        }
-      ]
+        },
+      ],
     },
     talhaoArea: '',
     talhaoCultivo: 'Nenhuma semeadura declarada',
-  }
+  };
 
   componentDidMount() {
     this.loadTalhao();
   }
 
-  atualizaCoordenadas(geojson) {
-    var string = JSON.stringify(geojson);
-    var objectValue = JSON.parse(string);
-    var coordinates = objectValue['features'][0]['geometry']['coordinates'][0][0];
+  replaceAll(str, needle, replacement) {
+    return str.split(needle).join(replacement);
+  }
 
-    if (coordinates) {
-      this.setState({ centroPropriedade: {
-          latitude: coordinates[1],
-          longitude: coordinates[0],
-          latitudeDelta: 0.0522,
-          longitudeDelta: 0.0122,
-        }
+  atualizaCoordenadas(dataInfo) {
+    const jsonIntel = JSON.parse(this.replaceAll(dataInfo.toString(), "'", "\""));
+
+    if (jsonIntel) {
+      this.setState({
+        centroPropriedade: {
+          latitude: jsonIntel.latitude_centroid,
+          longitude: jsonIntel.longitude_centroid,
+          latitudeDelta: 0.0222,
+          longitudeDelta: 0.0422,
+        },
       });
     }
   }
@@ -82,60 +92,76 @@ export default class AbrirTalhao extends React.Component {
       );
     }
 
-    this.setState({ id_talhao: id_talhao });
+    this.setState({id_talhao: id_talhao});
 
-    const response = await api.post('/arquivo/geojson', {
-      caminho: id_usuario + "/" + id_propriedade + "/" + id_talhao + "/field_" + id_talhao + "_json.txt",
-    });
+    const data = lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_json.txt');
 
-    const geojson = response.data;
-    this.setState({ mapaTalhao: geojson });
-    this.atualizaCoordenadas(geojson);
-    this.informacoesTalhao(id_usuario + "/" + id_propriedade + "/" + id_talhao + "/field_" + id_talhao + "_json_intel.txt");
-  }
+    const geojson = {
+      type: 'FeatureCollection',
+      name: 'teste',
+      crs: {
+        type: 'name',
+        properties: {
+          name: 'urn:ogc:def:crs:OGC:1.3:CRS84',
+        },
+      },
+      features: [
+        {
+          type: 'Feature',
+          properties: {
+            Name: null,
+            description: null,
+            gridcode: 1,
+          },
+          geometry: JSON.parse(data.toString()),
+        },
+      ],
+    };
 
-  informacoesTalhao = async (caminho) => {
-    const response = await api.post('/arquivo/informacoes/talhao', {
-      caminho
-    });
+    this.setState({mapaTalhao: geojson});
 
-    this.setState({talhaoArea: response.data.area_ha + ' ha'});
-  }
+    const dataInfo = lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_json_intel.txt');
+    this.atualizaCoordenadas(dataInfo);
+    this.informacoesTalhao(dataInfo);
+  };
+
+  informacoesTalhao = async (dataInfo) => {
+    const jsonIntel = JSON.parse(this.replaceAll(dataInfo.toString(), "'", "\""));
+    this.setState({talhaoArea: jsonIntel.area_ha + ' ha'});
+  };
 
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.titulo}>Talhão {this.state.id_talhao}</Text>
         <MapView
-          style={ styles.map }
+          style={styles.map}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
           region={this.state.centroPropriedade}
           showsMyLocationButton={true}
           showsUserLocation={true}
-          mapType={'satellite'}
-        >
-
-        <Geojson //Mapa do talhao
-          geojson={this.state.mapaTalhao}
-          strokeColor="red"
-          fillColor="white"
-          strokeWidth={2}
-          zIndex={1}
-        />
-
+          mapType={'satellite'}>
+          <Geojson //Mapa do talhao
+            geojson={this.state.mapaTalhao}
+            strokeColor="red"
+            fillColor="white"
+            strokeWidth={2}
+            zIndex={1}
+          />
         </MapView>
 
-        <TouchableOpacity
-          style={styles.botaoAcao}>
+        <TouchableOpacity style={styles.botaoAcao}>
           <Text style={styles.botaoText}>Informar Semeadura</Text>
         </TouchableOpacity>
         <Text style={styles.infoArea}>Área: {this.state.talhaoArea}</Text>
-        <Text style={styles.infoCultivo}>Cultivo: {this.state.talhaoCultivo}</Text>
+        <Text style={styles.infoCultivo}>
+          Cultivo: {this.state.talhaoCultivo}
+        </Text>
 
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>
         )}
-      </View>  
+      </View>
     );
   }
 }
@@ -147,7 +173,7 @@ const styles = StyleSheet.create({
     left: '5%',
     right: '5%',
     bottom: '25%',
-    padding: 20
+    padding: 20,
   },
   container: {
     flex: 1,
@@ -207,5 +233,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#ebf3e8',
     marginBottom: 40,
-  }
+  },
 });
