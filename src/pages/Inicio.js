@@ -2,10 +2,9 @@ import React from 'react';
 import {View, Text, Button, StyleSheet, TouchableOpacity} from 'react-native';
 import Connection from '../services/connection';
 import api from '../services/api';
-import RNFS from "react-native-fs";
+import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-community/async-storage';
 export default class Inicio extends React.Component {
-
   componentDidMount() {
     if (Connection.isConnected()) {
       this.synchronizeUser();
@@ -44,6 +43,8 @@ export default class Inicio extends React.Component {
           caminho: id_usuario + '/' + propriedade.nome + '/',
         });
 
+        const talhaoesPolyline = [];
+
         if (responseTalhoes.data) {
           //para cada talhao salva os arquivos
           const talhoes = responseTalhoes.data.talhoes;
@@ -51,10 +52,43 @@ export default class Inicio extends React.Component {
             talhao.arquivos.forEach(async (arquivo) => {
               this.saveFile(
                 arquivo.data,
-                id_usuario + '_prop' + propriedade.nome + '_th' + talhao.nome + '_' + arquivo.nome,
+                id_usuario +
+                  '_prop' +
+                  propriedade.nome +
+                  '_th' +
+                  talhao.nome +
+                  '_' +
+                  arquivo.nome,
               );
+
+              //adiciona o mapa do talhao a um arquivo com todos os demais talhoes
+              if (arquivo.nome === 'field_' + talhao.nome + '_json.txt') {
+                const jsonTalhao = JSON.parse(arquivo.data.toString());
+
+                const talhaoPolyline = [];
+
+                jsonTalhao.coordinates[0].forEach((coord) => {
+                  talhaoPolyline.push({
+                    latitude: coord[1],
+                    longitude: coord[0],
+                  });
+                });
+
+                talhaoesPolyline.push({
+                  talhao: talhao.nome,
+                  coordenadas: talhaoPolyline,
+                });
+              }
             });
           });
+        }
+
+        //salva o arquivo de mapas dos talhoes
+        if (talhaoesPolyline) {
+          this.saveFile(
+            talhaoesPolyline,
+            id_usuario + '_prop' + propriedade.nome + '_polyline.txt',
+          );
         }
       });
     }
