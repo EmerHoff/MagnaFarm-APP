@@ -43,7 +43,7 @@ export default class Inicio extends React.Component {
           caminho: id_usuario + '/' + propriedade.nome + '/',
         });
 
-        const talhaoesPolyline = [];
+        const talhoesPolyline = [];
 
         if (responseTalhoes.data) {
           //para cada talhao salva os arquivos
@@ -63,18 +63,18 @@ export default class Inicio extends React.Component {
 
               //adiciona o mapa do talhao a um arquivo com todos os demais talhoes
               if (arquivo.nome === 'field_' + talhao.nome + '_json.txt') {
-                const jsonTalhao = JSON.parse(arquivo.data.toString());
+                const jsonTalhao = JSON.parse(arquivo.data);
 
                 const talhaoPolyline = [];
 
-                jsonTalhao.coordinates[0].forEach((coord) => {
+                jsonTalhao['coordinates'][0].forEach(coord => {
                   talhaoPolyline.push({
-                    latitude: coord[1],
-                    longitude: coord[0],
+                      latitude: coord[1],
+                      longitude: coord[0],
                   });
                 });
 
-                talhaoesPolyline.push({
+                talhoesPolyline.push({
                   talhao: talhao.nome,
                   coordenadas: talhaoPolyline,
                 });
@@ -84,12 +84,11 @@ export default class Inicio extends React.Component {
         }
 
         //salva o arquivo de mapas dos talhoes
-        if (talhaoesPolyline) {
-          this.saveFile(
-            talhaoesPolyline,
-            id_usuario + '_prop' + propriedade.nome + '_polyline.txt',
-          );
-        }
+        console.log(JSON.stringify(talhoesPolyline));
+        this.saveFile(
+          JSON.stringify(talhoesPolyline),
+          id_usuario + '_prop' + propriedade.nome + '_polyline.txt',
+        );
       });
     }
   };
@@ -106,7 +105,6 @@ export default class Inicio extends React.Component {
 
     // write the file
     const data = await RNFS.readFile(path + name, 'utf8');
-    console.log('data file: ' + data.toString());
   };
 
   render() {
