@@ -84,7 +84,6 @@ export default class Inicio extends React.Component {
         }
 
         //salva o arquivo de mapas dos talhoes
-        console.log(JSON.stringify(talhoesPolyline));
         this.saveFile(
           JSON.stringify(talhoesPolyline),
           id_usuario + '_prop' + propriedade.nome + '_polyline.txt',

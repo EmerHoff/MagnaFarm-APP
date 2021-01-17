@@ -68,10 +68,10 @@ export default class AbrirTalhao extends React.Component {
     if (jsonIntel) {
       this.setState({
         centroPropriedade: {
-          latitude: jsonIntel.latitude_centroid,
-          longitude: jsonIntel.longitude_centroid,
-          latitudeDelta: 0.0222,
-          longitudeDelta: 0.0422,
+          latitude: parseFloat(jsonIntel.latitude_centroid),
+          longitude: parseFloat(jsonIntel.longitude_centroid),
+          latitudeDelta: 0.0122,
+          longitudeDelta: 0.0222,
         },
       });
     }
@@ -94,7 +94,7 @@ export default class AbrirTalhao extends React.Component {
 
     this.setState({id_talhao: id_talhao});
 
-    const data = lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_json.txt');
+    const data = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_json.txt');
 
     const geojson = {
       type: 'FeatureCollection',
@@ -120,7 +120,7 @@ export default class AbrirTalhao extends React.Component {
 
     this.setState({mapaTalhao: geojson});
 
-    const dataInfo = lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_json_intel.txt');
+    const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_json_intel.txt');
     this.atualizaCoordenadas(dataInfo);
     this.informacoesTalhao(dataInfo);
   };
@@ -129,6 +129,12 @@ export default class AbrirTalhao extends React.Component {
     const jsonIntel = JSON.parse(this.replaceAll(dataInfo.toString(), "'", "\""));
     this.setState({talhaoArea: jsonIntel.area_ha + ' ha'});
   };
+
+  lerArquivo = async (caminho) => {
+    const path = RNFS.DocumentDirectoryPath + '/magnafarm/';
+    const data = await RNFS.readFile(path + caminho, 'utf8');
+    return data;
+  }
 
   render() {
     return (

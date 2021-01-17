@@ -30,8 +30,8 @@ export default class AbrirPropriedade extends React.Component {
     talhoes: [],
     error: '',
     centroPropriedade: {
-      latitude: -15.415102320112714,
-      longitude: -54.818083435998041,
+      latitude: -24.415102320112714,
+      longitude: -53.818083435998041,
       latitudeDelta: 0.0222,
       longitudeDelta: 0.0422,
     },
@@ -72,10 +72,10 @@ export default class AbrirPropriedade extends React.Component {
     if (jsonIntel) {
       this.setState({
         centroPropriedade: {
-          latitude: jsonIntel.latitude_centroid,
-          longitude: jsonIntel.longitude_centroid,
-          latitudeDelta: 0.0222,
-          longitudeDelta: 0.0422,
+          latitude: parseFloat(jsonIntel.latitude_centroid),
+          longitude: parseFloat(jsonIntel.longitude_centroid),
+          latitudeDelta: 0.0352,
+          longitudeDelta: 0.0542,
         },
       });
     }
@@ -128,7 +128,7 @@ export default class AbrirPropriedade extends React.Component {
     this.setState({mapaPropriedade: geojson});
 
     const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_farm_json_intel.txt');
-    //this.atualizaCoordenadas(dataInfo);
+    this.atualizaCoordenadas(dataInfo);
   };
 
   listarTalhoes = async () => {
@@ -157,7 +157,8 @@ export default class AbrirPropriedade extends React.Component {
   };
 
   setarTalhao = async (id) => {
-    await AsyncStorage.setItem('@open_talhao', id.toString());
+    await AsyncStorage.setItem('@open_talhao', id);
+    console.log('id talhao: ' + id);
     this.props.navigation.navigate('AbrirTalhao');
   };
 
