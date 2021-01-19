@@ -93,14 +93,14 @@ export default class Inicio extends React.Component {
   };
 
   saveFile = async (content, name) => {
-    const path = RNFS.DocumentDirectoryPath + '/magnafarm/';
+    const path = RNFS.DocumentDirectoryPath + '/';
 
     // write the file
     RNFS.writeFile(path + name, content, 'utf8');
   };
 
   readFile = async (name) => {
-    const path = RNFS.DocumentDirectoryPath + '/magnafarm/';
+    const path = RNFS.DocumentDirectoryPath + '/';
 
     // write the file
     const data = await RNFS.readFile(path + name, 'utf8');

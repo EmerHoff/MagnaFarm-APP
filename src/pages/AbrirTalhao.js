@@ -131,7 +131,7 @@ export default class AbrirTalhao extends React.Component {
   };
 
   lerArquivo = async (caminho) => {
-    const path = RNFS.DocumentDirectoryPath + '/magnafarm/';
+    const path = RNFS.DocumentDirectoryPath + '/';
     const data = await RNFS.readFile(path + caminho, 'utf8');
     return data;
   }
@@ -150,7 +150,6 @@ export default class AbrirTalhao extends React.Component {
           <Geojson //Mapa do talhao
             geojson={this.state.mapaTalhao}
             strokeColor="red"
-            fillColor="white"
             strokeWidth={2}
             zIndex={1}
           />

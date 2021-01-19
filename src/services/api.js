@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://172.16.107.4:3333',
+  baseURL: 'https://magna-backend.herokuapp.com',
 });
 
 export default api;
