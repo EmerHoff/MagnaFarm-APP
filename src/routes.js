@@ -10,6 +10,7 @@ import Propriedade from './pages/Propriedade';
 import NovaPropriedade from './pages/NovaPropriedade';
 import AbrirPropriedade from './pages/AbrirPropriedade';
 import AbrirTalhao from './pages/AbrirTalhao';
+import Semeadura from './pages/Semeadura';
 
 const Stack = createStackNavigator();
 
@@ -67,6 +68,11 @@ function Routes() {
         <Stack.Screen
           name="AbrirTalhao"
           component={AbrirTalhao}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Semeadura"
+          component={Semeadura}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

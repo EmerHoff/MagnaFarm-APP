@@ -50,8 +50,11 @@ export default class AbrirTalhao extends React.Component {
         },
       ],
     },
+    nomeTalhao: '',
     talhaoArea: '',
-    talhaoCultivo: 'Nenhuma semeadura declarada',
+    cultivo: 'Nenhuma semeadura declarada',
+    dataPlantio: '',
+    diasPlantio: '',
   };
 
   componentDidMount() {
@@ -127,7 +130,13 @@ export default class AbrirTalhao extends React.Component {
 
   informacoesTalhao = async (dataInfo) => {
     const jsonIntel = JSON.parse(this.replaceAll(dataInfo.toString(), "'", "\""));
+    this.setState({nomeTalhao: jsonIntel.farm_name});
     this.setState({talhaoArea: jsonIntel.area_ha + ' ha'});
+
+    //Aqui ira as info de cultivo
+    //this.setState({cultivo: jsonIntel.area_ha});
+    //this.setState({dataPlantio: jsonIntel.area_ha});
+    //this.setState({diasPlantio: jsonIntel.area_ha + ' DAS'});
   };
 
   lerArquivo = async (caminho) => {
@@ -139,7 +148,7 @@ export default class AbrirTalhao extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.titulo}>Talhão {this.state.id_talhao}</Text>
+        <Text style={styles.titulo}>{this.state.nomeTalhao}</Text>
         <MapView
           style={styles.map}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
@@ -156,12 +165,17 @@ export default class AbrirTalhao extends React.Component {
         </MapView>
 
         <TouchableOpacity style={styles.botaoAcao}>
-          <Text style={styles.botaoText}>Informar Semeadura</Text>
+          <Text style={styles.botaoText} 
+          onPress={
+            () => {this.props.navigation.navigate('Semeadura')
+            }
+          }>Informar Semeadura</Text>
         </TouchableOpacity>
+
         <Text style={styles.infoArea}>Área: {this.state.talhaoArea}</Text>
-        <Text style={styles.infoCultivo}>
-          Cultivo: {this.state.talhaoCultivo}
-        </Text>
+        <Text style={styles.infoCultivo}>Cultivo: {this.state.cultivo}</Text>
+        <Text style={styles.infoDataPlantio}>Data do Plantio: {this.state.dataPlantio}</Text>
+        <Text style={styles.infoDiasPlantio}>Dias após semeadura: {this.state.diasPlantio}</Text>
 
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>
@@ -234,6 +248,22 @@ const styles = StyleSheet.create({
   infoCultivo: {
     position: 'absolute',
     top: '88%',
+    fontWeight: 'bold',
+    fontSize: 15,
+    color: '#ebf3e8',
+    marginBottom: 40,
+  },
+  infoDataPlantio: {
+    position: 'absolute',
+    top: '91%',
+    fontWeight: 'bold',
+    fontSize: 15,
+    color: '#ebf3e8',
+    marginBottom: 40,
+  },
+  infoDiasPlantio: {
+    position: 'absolute',
+    top: '94%',
     fontWeight: 'bold',
     fontSize: 15,
     color: '#ebf3e8',

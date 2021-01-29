@@ -2,6 +2,8 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 
 import api from '../services/api';
+import Connection from '../services/connection';
+import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Propriedade extends React.Component {
@@ -27,15 +29,29 @@ export default class Propriedade extends React.Component {
       );
     }
 
-    const response = await api.get('/propriedade/listar/' + id_usuario);
+    const data = await this.lerArquivo(id_usuario + '_propiedades.txt');
+    const propriedades = JSON.parse(data);
+    this.setState({propriedades: propriedades.propriedades});
 
-    const {propriedades} = response.data;
-    this.setState({propriedades});
+    /*if(Connection.isConnected()) {
+      const response = await api.get('/propriedade/listar/' + id_usuario);
+
+      const {propriedades} = response.data;
+      this.setState({propriedades});
+    } else {
+
+    }*/
   };
 
   setarPropriedade = async (id) => {
     await AsyncStorage.setItem('@open_propriedade', id.toString());
     this.props.navigation.navigate('AbrirPropriedade');
+  }
+
+  lerArquivo = async (caminho) => {
+    const path = RNFS.DocumentDirectoryPath + '/';
+    const data = await RNFS.readFile(path + caminho, 'utf8');
+    return data;
   }
 
   renderItem = ({item}) => (

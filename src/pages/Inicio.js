@@ -88,6 +88,15 @@ export default class Inicio extends React.Component {
           JSON.stringify(talhoesPolyline),
           id_usuario + '_prop' + propriedade.nome + '_polyline.txt',
         );
+
+        //salva um arquivo com informacoes das propriedades
+        const responseProps = await api.get('/propriedade/listar/' + id_usuario);
+        if (responseProps) {
+          this.saveFile(
+            JSON.stringify(responseProps.data),
+            id_usuario + '_propiedades.txt',
+          );
+        }
       });
     }
   };

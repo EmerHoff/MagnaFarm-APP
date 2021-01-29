@@ -28,6 +28,7 @@ export default class AbrirPropriedade extends React.Component {
     id_propriedade: '',
     id_usuario: '',
     talhoes: [],
+    labels: [],
     error: '',
     centroPropriedade: {
       latitude: -24.415102320112714,
@@ -60,6 +61,7 @@ export default class AbrirPropriedade extends React.Component {
   componentDidMount() {
     this.loadMapa();
     this.listarTalhoes();
+    this.adicionarLabels();
   }
 
   replaceAll(str, needle, replacement) {
@@ -162,6 +164,27 @@ export default class AbrirPropriedade extends React.Component {
     this.props.navigation.navigate('AbrirTalhao');
   };
 
+  adicionarLabels = async () => {
+    const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
+    const id_usuario = await AsyncStorage.getItem('@save_id');
+
+    const data = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_polyline.txt');
+    const talhoes = JSON.parse(data.toString());
+
+    await talhoes.forEach(async (talhao) => {
+      const labels = this.state.labels;
+      const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + talhao.talhao + '_field_' + talhao.talhao + '_json_intel.txt');
+      const jsonIntel = JSON.parse(this.replaceAll(dataInfo.toString(), "'", "\""));
+
+      labels.push({
+        nome: talhao.talhao,
+        latitude: jsonIntel.latitude_centroid,
+        longitude: jsonIntel.longitude_centroid
+      });
+      this.setState({labels: labels});
+    }); 
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -192,6 +215,20 @@ export default class AbrirPropriedade extends React.Component {
               />
             );
           })}
+
+          {this.state.labels.map((label, index) => {
+            return (
+              <Marker
+                key={index}
+                coordinate={{ latitude : parseFloat(label.latitude) , longitude : parseFloat(label.longitude)  }}
+              >
+                <Text note style={{color:"#FFF", fontSize: 10}}>
+                  {label.nome}
+                </Text>
+            </Marker>
+            );
+          })}
+
         </MapView>
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>
