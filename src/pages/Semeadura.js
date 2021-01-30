@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import {Picker} from '@react-native-community/picker';
+import RNFS from 'react-native-fs';
 
 import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -15,13 +16,16 @@ export default class Semeadura extends React.Component {
   state = {
     idTalhao: '',
     cultura: '',
+    ciclo: '',
     variedade: '',
     dataPlantio: '',
+    tipoSemeaduras: [],
     error: '',
   };
 
   componentDidMount() {
     this.setarData();
+    this.buscarTipoSemeadura();
   }
 
   setarData() {
@@ -33,7 +37,7 @@ export default class Semeadura extends React.Component {
     }
     var dia = today.getDate();
 
-    this.setState({ dataPlantio: dia + "/" + mes + "/" + year});
+    this.setState({ dataPlantio: dia + "-" + mes + "-" + year});
   }
 
   handleCulturaChange = (cultura) => {
@@ -48,10 +52,9 @@ export default class Semeadura extends React.Component {
 
   handleSalvarPress = async () => {
     if (
-      this.state.idTalhao.length === 0 ||
-      this.state.cultura.length === 0 ||
+      this.state.cultura === '' ||
       this.state.variedade.length === 0 ||
-      this.state.dataPlantio.length === 0 
+      this.state.dataPlantio.length <= 9 
     ) {
       this.setState(
         {
@@ -61,25 +64,31 @@ export default class Semeadura extends React.Component {
       );
     } else {
       try {
-        /*const response = await api.post('/usuario', {
-          login: this.state.login,
-          nome: this.state.nome,
-          telefone: this.state.telefone,
-          senha: this.state.senha,
-          confirma_senha: this.state.confirma_senha,
+        const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
+        const id_usuario = await AsyncStorage.getItem('@save_id');
+        const id_talhao = await AsyncStorage.getItem('@open_talhao');
+
+        console.log('cultivo', this.state.tipoSemeaduras[this.state.cultura].cultivo);
+        console.log('ciclo', this.state.tipoSemeaduras[this.state.cultura].ciclo);
+
+        const response = await api.post('/semeadura/declarar', {
+          id_talhao: id_talhao,
+          id_propriedade: id_propriedade,
+          id_usuario: id_usuario,
+          cultura: this.state.tipoSemeaduras[this.state.cultura].cultivo,
+          ciclo: this.state.tipoSemeaduras[this.state.cultura].ciclo,
+          variedade: this.state.variedade,
+          dataPlantio: this.state.dataPlantio,
         });
 
-        console.log(response.data);
-
         if (response.data.statusCode === 200) {
-          await AsyncStorage.setItem('@save_id', response.data.usuario.id.toString());
-          this.props.navigation.navigate('BemVindo');
+          this.saveFile(response.data.textData, id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_semeadura.txt');
+          this.props.navigation.goBack();
         } else {
           this.setState({
             error: response.data.message,
           });
-        }*/
-        console.log('salvou de mentirinha');
+        }
       } catch (_err) {
         this.setState({
           error:
@@ -87,6 +96,19 @@ export default class Semeadura extends React.Component {
         });
       }
     }
+  };
+
+  buscarTipoSemeadura = async () => {
+    const response = await api.get('/tiposemeadura/listar');
+
+    this.setState({tipoSemeaduras: response.data.semeaduras});
+  }
+
+  saveFile = async (content, name) => {
+    const path = RNFS.DocumentDirectoryPath + '/';
+
+    // write the file
+    RNFS.writeFile(path + name, content, 'utf8');
   };
 
   render() {
@@ -98,11 +120,15 @@ export default class Semeadura extends React.Component {
           <Picker
             selectedValue={this.state.cultura}
             style={{color: '#FFF'}}
-            onValueChange={(itemValue, itemIndex) =>
+            onValueChange={(itemValue) =>
               this.setState({cultura: itemValue})
             }>
-            <Picker.Item label="Soja" value="soja" />
-            <Picker.Item label="Milho" value="milho" />
+
+            {this.state.tipoSemeaduras.map((semeadura, index) => {
+              return (
+                <Picker.Item label={semeadura.cultivo} value={index} key={index} />
+              );
+            })}
           </Picker>
         </View>
         <View style={styles.inputView}>
@@ -133,7 +159,7 @@ export default class Semeadura extends React.Component {
         )}
         <TouchableOpacity
           style={styles.loginBtn}
-          onPress={this.handleCadastroPress}>
+          onPress={this.handleSalvarPress}>
           <Text style={styles.loginText}>Salvar</Text>
         </TouchableOpacity>
 

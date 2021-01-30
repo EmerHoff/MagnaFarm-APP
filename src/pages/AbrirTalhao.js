@@ -59,6 +59,7 @@ export default class AbrirTalhao extends React.Component {
 
   componentDidMount() {
     this.loadTalhao();
+    this.informacoesSemeadura();
   }
 
   replaceAll(str, needle, replacement) {
@@ -130,13 +131,26 @@ export default class AbrirTalhao extends React.Component {
 
   informacoesTalhao = async (dataInfo) => {
     const jsonIntel = JSON.parse(this.replaceAll(dataInfo.toString(), "'", "\""));
+    jsonIntel.farm_name = this.replaceAll(jsonIntel.farm_name, 'Talh�o', 'Talhão');
     this.setState({nomeTalhao: jsonIntel.farm_name});
     this.setState({talhaoArea: jsonIntel.area_ha + ' ha'});
+  };
 
-    //Aqui ira as info de cultivo
-    //this.setState({cultivo: jsonIntel.area_ha});
-    //this.setState({dataPlantio: jsonIntel.area_ha});
-    //this.setState({diasPlantio: jsonIntel.area_ha + ' DAS'});
+  informacoesSemeadura = async () => {
+    const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
+    const id_usuario = await AsyncStorage.getItem('@save_id');
+    const id_talhao = await AsyncStorage.getItem('@open_talhao');
+
+    const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_semeadura.txt');
+
+    const jsonIntel = JSON.parse(this.replaceAll('[' + dataInfo.toString() + ']', "'", "\""));
+    this.setState({cultivo: jsonIntel[jsonIntel.length - 1].crop});
+
+    const dataPlantio = jsonIntel[jsonIntel.length - 1].sowing_date;
+    const DAS = parseInt((new Date() - new Date(jsonIntel[jsonIntel.length - 1].sowing_date)) / (1000 * 60 * 60 * 24), 10);
+
+    this.setState({dataPlantio: dataPlantio.split('-')[2] + '-' + dataPlantio.split('-')[1] + '-' + dataPlantio.split('-')[0]});
+    this.setState({diasPlantio: DAS + ' DAS'});
   };
 
   lerArquivo = async (caminho) => {
