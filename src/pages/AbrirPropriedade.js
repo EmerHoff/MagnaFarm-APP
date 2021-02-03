@@ -221,6 +221,7 @@ export default class AbrirPropriedade extends React.Component {
               <Marker
                 key={index}
                 coordinate={{ latitude : parseFloat(label.latitude) , longitude : parseFloat(label.longitude)  }}
+                onPress={() => this.setarTalhao(label.nome)}
               >
                 <Text note style={{color:"#FFF", fontSize: 10}}>
                   {label.nome}

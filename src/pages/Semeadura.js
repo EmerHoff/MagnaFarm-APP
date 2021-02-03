@@ -82,8 +82,9 @@ export default class Semeadura extends React.Component {
         });
 
         if (response.data.statusCode === 200) {
-          this.saveFile(response.data.textData, id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_semeadura.txt');
-          this.props.navigation.goBack();
+          this.saveFile(response.data.textData, id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_sowing_event.txt');
+          //this.props.navigation.goBack();
+          this.props.navigation.navigate('AbrirTalhao');
         } else {
           this.setState({
             error: response.data.message,

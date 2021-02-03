@@ -11,6 +11,7 @@ import NovaPropriedade from './pages/NovaPropriedade';
 import AbrirPropriedade from './pages/AbrirPropriedade';
 import AbrirTalhao from './pages/AbrirTalhao';
 import Semeadura from './pages/Semeadura';
+import NDVI from './pages/NDVI';
 
 const Stack = createStackNavigator();
 
@@ -73,6 +74,11 @@ function Routes() {
         <Stack.Screen
           name="Semeadura"
           component={Semeadura}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="NDVI"
+          component={NDVI}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
