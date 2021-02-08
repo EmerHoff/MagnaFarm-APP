@@ -35,7 +35,11 @@ export default class Semeadura extends React.Component {
     if (today.getMonth() + 1 <= 9) {
       mes = '0' + (today.getMonth() + 1).toString();
     }
+
     var dia = today.getDate();
+    if (dia <= 9) {
+      dia = '0' + (today.getDate()).toString();
+    }
 
     this.setState({ dataPlantio: dia + "-" + mes + "-" + year});
   }
@@ -68,9 +72,6 @@ export default class Semeadura extends React.Component {
         const id_usuario = await AsyncStorage.getItem('@save_id');
         const id_talhao = await AsyncStorage.getItem('@open_talhao');
 
-        console.log('cultivo', this.state.tipoSemeaduras[this.state.cultura].cultivo);
-        console.log('ciclo', this.state.tipoSemeaduras[this.state.cultura].ciclo);
-
         const response = await api.post('/semeadura/declarar', {
           id_talhao: id_talhao,
           id_propriedade: id_propriedade,
@@ -84,7 +85,7 @@ export default class Semeadura extends React.Component {
         if (response.data.statusCode === 200) {
           this.saveFile(response.data.textData, id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_sowing_event.txt');
           //this.props.navigation.goBack();
-          this.props.navigation.navigate('AbrirTalhao');
+          this.props.navigation.navigate('AbrirPropriedade');
         } else {
           this.setState({
             error: response.data.message,
@@ -107,9 +108,8 @@ export default class Semeadura extends React.Component {
 
   saveFile = async (content, name) => {
     const path = RNFS.DocumentDirectoryPath + '/';
-
     // write the file
-    RNFS.writeFile(path + name, content, 'utf8');
+    await RNFS.writeFile(path + name, content, 'utf8');
   };
 
   render() {

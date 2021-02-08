@@ -145,19 +145,21 @@ export default class AbrirTalhao extends React.Component {
 
     const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_sowing_event.txt');
 
-    const jsonIntel = JSON.parse(this.replaceAll('[' + dataInfo.toString() + ']', "'", "\""));
-    
-    const dataPlantio = jsonIntel[jsonIntel.length - 1].sowing_date;
-    const DAS = parseInt((new Date() - new Date(jsonIntel[jsonIntel.length - 1].sowing_date)) / (1000 * 60 * 60 * 24), 10);
-    const ciclo = parseInt(jsonIntel[jsonIntel.length - 1].cycle);
+    if (dataInfo) {
+      const jsonIntel = JSON.parse(this.replaceAll('[' + dataInfo.toString() + ']', "'", "\""));
+      
+      const dataPlantio = jsonIntel[jsonIntel.length - 1].sowing_date;
+      const DAS = parseInt((new Date() - new Date(jsonIntel[jsonIntel.length - 1].sowing_date)) / (1000 * 60 * 60 * 24), 10);
+      const ciclo = parseInt(jsonIntel[jsonIntel.length - 1].cycle);
 
-    if (DAS <= ciclo) {
-      //Dentro do ciclo
-      this.setState({cultivo: jsonIntel[jsonIntel.length - 1].crop});
-      this.setState({dataPlantio: dataPlantio.split('-')[2] + '-' + dataPlantio.split('-')[1] + '-' + dataPlantio.split('-')[0]});
-      this.setState({diasPlantio: DAS + ' DAS'});
-      this.setState({corSemeadura: '#FFF'});
-      this.setState({existeSemeadura: true});
+      if (DAS <= ciclo) {
+        //Dentro do ciclo
+        this.setState({cultivo: jsonIntel[jsonIntel.length - 1].crop});
+        this.setState({dataPlantio: dataPlantio.split('-')[2] + '-' + dataPlantio.split('-')[1] + '-' + dataPlantio.split('-')[0]});
+        this.setState({diasPlantio: DAS + ' DAS'});
+        this.setState({corSemeadura: '#FFF'});
+        this.setState({existeSemeadura: true});
+      }
     }
   };
 
