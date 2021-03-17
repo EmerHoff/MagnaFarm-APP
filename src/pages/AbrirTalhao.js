@@ -149,6 +149,7 @@ export default class AbrirTalhao extends React.Component {
       const jsonIntel = JSON.parse(this.replaceAll('[' + dataInfo.toString() + ']', "'", "\""));
       
       const dataPlantio = jsonIntel[jsonIntel.length - 1].sowing_date;
+      await AsyncStorage.setItem('@talhao_dataPlantio', dataPlantio);
       const DAS = parseInt((new Date() - new Date(jsonIntel[jsonIntel.length - 1].sowing_date)) / (1000 * 60 * 60 * 24), 10);
       const ciclo = parseInt(jsonIntel[jsonIntel.length - 1].cycle);
 

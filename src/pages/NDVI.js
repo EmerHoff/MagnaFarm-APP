@@ -27,6 +27,7 @@ export default class NDVI extends React.Component {
     const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
     const id_usuario = await AsyncStorage.getItem('@save_id');
     const id_talhao = await AsyncStorage.getItem('@open_talhao');
+    const dataPlantio = await AsyncStorage.getItem('@talhao_dataPlantio');
 
     const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_S2_images.txt');
 
@@ -36,16 +37,15 @@ export default class NDVI extends React.Component {
     var mapasJson = [];
 
     splited.forEach(async (info) => {
-      console.log(info);
-      console.log(info.split('\''));
-      console.log('--------------------');
       mapasJson.push({
         data: info.split('\'')[1],
-        das: '15',
+        das: parseInt((new Date() - new Date(dataPlantio)) / (1000 * 60 * 60 * 24), 10),
         indice: info.split('\'')[3],
-        cor: '#FF5733'
+        cor: this.hslToHex(info.split('\'')[3])
       });
     });
+
+    //var sortedObjs = _.sortBy( mapasJson, 'das' );
 
     this.setState({mapas: mapasJson});
   }
@@ -60,6 +60,20 @@ export default class NDVI extends React.Component {
     const data = await RNFS.readFile(path + caminho, 'utf8');
     return data;
   }
+
+  hslToHex(indiceValue) {
+    var h = parseFloat(indiceValue) * 100;
+    var s = 100;
+    var l = 42;
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = n => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
 
   renderItem = ({item}) => (
     <TouchableWithoutFeedback onPress={ () => this.abrirNDVI(item)}>
