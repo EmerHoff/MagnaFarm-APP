@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { FlatList, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-
+import RNFS from 'react-native-fs';
 export default class NDVI extends React.Component {
   state = {
     mapas: [],
@@ -19,31 +19,33 @@ export default class NDVI extends React.Component {
     this.loadMapas();
   }
 
+  replaceAll(str, needle, replacement) {
+    return str.split(needle).join(replacement);
+  }
+
   loadMapas = async () => {
     const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
     const id_usuario = await AsyncStorage.getItem('@save_id');
     const id_talhao = await AsyncStorage.getItem('@open_talhao');
 
-    var mapasJson = [
-      {
-        data: '30-01-2021',
-        das: '0',
-        indice: 0.1,
+    const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_S2_images.txt');
+
+    const jsonIntel = this.replaceAll(dataInfo.toString(), "{", "");
+    const splited = jsonIntel.split('], ');
+
+    var mapasJson = [];
+
+    splited.forEach(async (info) => {
+      console.log(info);
+      console.log(info.split('\''));
+      console.log('--------------------');
+      mapasJson.push({
+        data: info.split('\'')[1],
+        das: '15',
+        indice: info.split('\'')[3],
         cor: '#FF5733'
-      },
-      {
-        data: '05-02-2021',
-        das: '5',
-        indice: 0.3,
-        cor: '#F2D428'
-      },
-      {
-        data: '10-02-2021',
-        das: '10',
-        indice: 0.5,
-        cor: '#D7ED21'
-      }
-    ];
+      });
+    });
 
     this.setState({mapas: mapasJson});
   }
@@ -53,12 +55,18 @@ export default class NDVI extends React.Component {
     this.props.navigation.navigate('AbrirNDVI');
   }
 
+  lerArquivo = async (caminho) => {
+    const path = RNFS.DocumentDirectoryPath + '/';
+    const data = await RNFS.readFile(path + caminho, 'utf8');
+    return data;
+  }
+
   renderItem = ({item}) => (
     <TouchableWithoutFeedback onPress={ () => this.abrirNDVI(item)}>
       <View style={styles.mapasContainer} backgroundColor={item.cor}>
         <Text style={styles.textItemData}>{item.data}</Text>
         <Text style={styles.textItemDAS}>{item.das} DAS</Text>
-        <Text style={styles.textItemIndice}>{item.indice.toString()}</Text>
+        <Text style={styles.textItemIndice}>{item.indice}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -71,7 +79,7 @@ export default class NDVI extends React.Component {
         <View>
           <FlatList style={styles.listaContainer}
             data={this.state.mapas}
-            keyExtractor={(item, index) => index}
+            keyExtractor={(item, index) => item.data}
             renderItem={this.renderItem}
           />
         </View>

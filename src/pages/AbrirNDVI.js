@@ -152,6 +152,7 @@ export default class AbrirNDVI extends React.Component {
           <Geojson //Mapa do talhao
             geojson={this.state.mapaTalhao}
             strokeColor="white"
+            fillColor="green"
             strokeWidth={2}
             zIndex={1}
           />
