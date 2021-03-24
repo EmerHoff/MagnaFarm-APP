@@ -174,7 +174,8 @@ export default class AbrirPropriedade extends React.Component {
     await talhoes.forEach(async (talhao) => {
       const labels = this.state.labels;
       const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + talhao.talhao + '_field_' + talhao.talhao + '_json_intel.txt');
-      const jsonIntel = JSON.parse(this.replaceAll(dataInfo.toString(), "'", "\""));
+      const formated = await this.replaceFieldInfo(dataInfo);
+      const jsonIntel = JSON.parse(this.replaceAll(formated.toString(), "'", "\""));
 
       labels.push({
         nome: talhao.talhao,
@@ -183,6 +184,25 @@ export default class AbrirPropriedade extends React.Component {
       });
       this.setState({labels: labels});
     }); 
+  }
+
+  replaceFieldInfo = async (value) => {
+    if (value.includes('\'S2_tile\': "[') && value.includes(']",')) {
+        const firstPart = value.split('\'S2_tile\': "[')[0];
+        const secondPart = value.split('\'S2_tile\': "[')[1].split(']",')[1];
+
+        value = firstPart + secondPart;
+    }
+
+    if (value.includes('\'corners_map\': [')) {
+        const firstPart = value.split('\'corners_map\': [')[0];
+        const corners = value.split('\'corners_map\': [')[1].split(']')[0];
+        const secondPart = value.split('\'corners_map\': [')[1].split(']')[1];
+
+        value = firstPart + '\"corners_map\": [\"' + this.replaceAll(corners.toString(), ', ', '\", "') + '\"]' + secondPart;
+    }
+
+    return value;
   }
 
   render() {

@@ -127,8 +127,9 @@ export default class AbrirTalhao extends React.Component {
     this.setState({mapaTalhao: geojson});
 
     const dataInfo = await this.lerArquivo(id_usuario + '_prop' + id_propriedade + '_th' + id_talhao + '_field_' + id_talhao + '_json_intel.txt');
-    this.atualizaCoordenadas(dataInfo);
-    this.informacoesTalhao(dataInfo);
+    const formated = await this.replaceFieldInfo(dataInfo);
+    this.atualizaCoordenadas(formated);
+    this.informacoesTalhao(formated);
   };
 
   informacoesTalhao = async (dataInfo) => {
@@ -137,6 +138,25 @@ export default class AbrirTalhao extends React.Component {
     this.setState({nomeTalhao: jsonIntel.farm_name});
     this.setState({talhaoArea: jsonIntel.area_ha + ' ha'});
   };
+
+  replaceFieldInfo = async (value) => {
+    if (value.includes('\'S2_tile\': "[') && value.includes(']",')) {
+        const firstPart = value.split('\'S2_tile\': "[')[0];
+        const secondPart = value.split('\'S2_tile\': "[')[1].split(']",')[1];
+
+        value = firstPart + secondPart;
+    }
+
+    if (value.includes('\'corners_map\': [')) {
+        const firstPart = value.split('\'corners_map\': [')[0];
+        const corners = value.split('\'corners_map\': [')[1].split(']')[0];
+        const secondPart = value.split('\'corners_map\': [')[1].split(']')[1];
+
+        value = firstPart + '\"corners_map\": [\"' + this.replaceAll(corners.toString(), ', ', '\", "') + '\"]' + secondPart;
+    }
+
+    return value;
+  }
 
   informacoesSemeadura = async () => {
     const id_propriedade = await AsyncStorage.getItem('@open_propriedade');

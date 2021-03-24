@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { FlatList, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import RNFS from 'react-native-fs';
+import api from '../services/api';
 export default class NDVI extends React.Component {
   state = {
     mapas: [],
@@ -39,19 +40,23 @@ export default class NDVI extends React.Component {
     splited.forEach(async (info) => {
       mapasJson.push({
         data: info.split('\'')[1],
-        das: parseInt((new Date() - new Date(dataPlantio)) / (1000 * 60 * 60 * 24), 10),
+        das: parseInt((new Date(info.split('\'')[1]) - new Date(dataPlantio)) / (1000 * 60 * 60 * 24), 10),
         indice: info.split('\'')[3],
         cor: this.hslToHex(info.split('\'')[3])
       });
     });
 
-    //var sortedObjs = _.sortBy( mapasJson, 'das' );
-
-    this.setState({mapas: mapasJson});
+    this.setState({mapas: mapasJson.sort((a, b) => parseFloat(a.das) - parseFloat(b.das))});
   }
 
-  abrirNDVI(item) {
-    console.log('Selected Item :',item.data);
+  abrirNDVI = async (item) => {
+    const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
+    const id_usuario = await AsyncStorage.getItem('@save_id');
+    const id_talhao = await AsyncStorage.getItem('@open_talhao');
+    await AsyncStorage.setItem('@ndvi_data', item.data);
+
+    console.log('Sincronizando ' + item.data);
+    await this.sincronizarImagensTalhao(id_usuario, id_propriedade, id_talhao, item.data);
     this.props.navigation.navigate('AbrirNDVI');
   }
 
@@ -59,6 +64,51 @@ export default class NDVI extends React.Component {
     const path = RNFS.DocumentDirectoryPath + '/';
     const data = await RNFS.readFile(path + caminho, 'utf8');
     return data;
+  }
+
+  sincronizarImagensTalhao = async (id_usuario, id_propriedade, id_talhao, dataNDVI) => {
+    //Arquivos de NDVI e RGB dos talhoes
+    dataNDVI = this.replaceAll(dataNDVI, '-', '');
+
+    if (! await RNFS.exists(RNFS.DocumentDirectoryPath + '/' + id_usuario + '_prop' + id_propriedade + '_' + id_talhao + '_' + dataNDVI + '_0001_NDVI.png')) {
+      const responseNDVI = await api.post(
+        '/arquivo/buscar/ndvi',
+        {
+          caminho: id_usuario + '/' + id_propriedade + '/' + id_talhao  + '/',
+          dateNDVI: dataNDVI + '_NDVI'
+        },
+      );
+
+      if (responseNDVI.data) {
+          RNFS.writeFile(
+            RNFS.DocumentDirectoryPath + 
+            '/' + id_usuario + '_prop' + id_propriedade + '_' + id_talhao + '_' + dataNDVI + '_' + responseNDVI.data.nome,
+            responseNDVI.data.data, 
+            'base64'
+          );
+
+          console.log(RNFS.DocumentDirectoryPath + '/' + id_usuario + '_prop' + id_propriedade + '_' + id_talhao + '_' + dataNDVI + '_' + responseNDVI.data.nome);
+      }
+    }
+
+    if (! await RNFS.exists(RNFS.DocumentDirectoryPath + '/' + id_usuario + '_prop' + id_propriedade + '_' + id_talhao + '_' + dataNDVI + '_0001_RGB.png')) {
+      const responseRGB = await api.post(
+        '/arquivo/buscar/rgb',
+        {
+          caminho: id_usuario + '/' + id_propriedade + '/' + id_talhao  + '/',
+          dateNDVI: dataNDVI + '_NDVI'
+        },
+      );
+
+      if (responseRGB.data) {
+          RNFS.writeFile(
+            RNFS.DocumentDirectoryPath + 
+            '/' + id_usuario + '_prop' + id_propriedade + '_' + id_talhao + '_' + dataNDVI + '_' + responseRGB.data.nome,
+            responseRGB.data.data, 
+            'base64'
+          );
+      }
+    }
   }
 
   hslToHex(indiceValue) {
