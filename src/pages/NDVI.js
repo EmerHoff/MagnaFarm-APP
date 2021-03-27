@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 import { FlatList, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import RNFS from 'react-native-fs';
@@ -14,6 +15,7 @@ export default class NDVI extends React.Component {
   state = {
     mapas: [],
     error: '',
+    loading: false,
   };
 
   componentDidMount() {
@@ -50,6 +52,7 @@ export default class NDVI extends React.Component {
   }
 
   abrirNDVI = async (item) => {
+    this.setState({loading: true});
     const id_propriedade = await AsyncStorage.getItem('@open_propriedade');
     const id_usuario = await AsyncStorage.getItem('@save_id');
     const id_talhao = await AsyncStorage.getItem('@open_talhao');
@@ -57,6 +60,7 @@ export default class NDVI extends React.Component {
 
     console.log('Sincronizando ' + item.data);
     await this.sincronizarImagensTalhao(id_usuario, id_propriedade, id_talhao, item.data);
+    this.setState({loading: false});
     this.props.navigation.navigate('AbrirNDVI');
   }
 
@@ -148,6 +152,12 @@ export default class NDVI extends React.Component {
           />
         </View>
 
+        {this.state.loading === true && (
+          <View style={[styles.loading, styles.overlayLoading]}>
+              <ActivityIndicator animating={this.state.loading} size="large" color="#00ff00" />
+          </View>
+        )}
+
       </View>
     );
   }
@@ -238,4 +248,17 @@ const styles = StyleSheet.create({
     flex: 0.5,
     justifyContent: 'flex-end'
   },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlayLoading: {
+    backgroundColor: '#000',
+    opacity: 0.5,
+  }
 });

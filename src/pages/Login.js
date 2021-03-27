@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  ActivityIndicator
 } from 'react-native';
 
 import api from '../services/api';
@@ -17,6 +18,7 @@ export default class Login extends React.Component {
     email: '',
     password: '',
     error: '',
+    loading: false,
   };
 
   handleEmailChange = (email) => {
@@ -32,8 +34,10 @@ export default class Login extends React.Component {
   };
 
   handleLoginPress = async () => {
+    this.setState({loading: true});
     if (this.state.email.length === 0 || this.state.password.length === 0) {
       console.log('Sem infos');
+      this.setState({loading: false});
       this.setState(
         {
           error: 'Preencha os campos de email e senha para continuar!',
@@ -49,11 +53,12 @@ export default class Login extends React.Component {
 
         if (response.data.statusCode === 200) {
           console.log(response.data.usuario.id);
-
           await AsyncStorage.setItem('@save_id', response.data.usuario.id.toString());
 
-          this.props.navigation.navigate('Inicio');
+          this.setState({loading: false});
+          this.props.navigation.navigate('Propriedade');
         } else {
+          this.setState({loading: false});
           this.setState({
             error: response.data.message,
           });
@@ -98,13 +103,16 @@ export default class Login extends React.Component {
           />
         </View>
 
-        <TouchableOpacity>
-          <Text style={styles.forgot}>Esqueceu a senha?</Text>
-        </TouchableOpacity>
-
         {this.state.error.length !== 0 && (
           <Text style={styles.errorText}>{this.state.error}</Text>
         )}
+
+        {this.state.loading === true && (
+          <View style={[styles.loading, styles.overlayLoading]}>
+              <ActivityIndicator animating={this.state.loading} size="large" color="#00ff00" />
+          </View>
+        )}
+
         <TouchableOpacity
           style={styles.loginBtn}
           onPress={this.handleLoginPress}>
@@ -185,4 +193,17 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontWeight: 'bold',
   },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlayLoading: {
+    backgroundColor: '#000',
+    opacity: 0.5,
+  }
 });
