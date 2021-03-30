@@ -70,6 +70,7 @@ export default class Login extends React.Component {
         });
       }
     }
+    this.setState({loading: false});
   };
 
   render() {
