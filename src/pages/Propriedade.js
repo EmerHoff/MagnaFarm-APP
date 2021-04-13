@@ -13,107 +13,8 @@ export default class Propriedade extends React.Component {
   };
 
   componentDidMount() {
-    if (Connection.isConnected()) {
-      this.synchronizeUser();
-    }
-
     this.loadPropriedades();
   }
-
-  synchronizeUser = async () => {
-    const id_usuario = await AsyncStorage.getItem('@save_id');
-
-    if (!id_usuario) {
-      return;
-    }
-
-    //salvar os arquivos da propriedade
-    const responsePropriedade = await api.post(
-      '/arquivo/sincronizar/propriedades',
-      {
-        caminho: id_usuario + '/',
-      },
-    );
-
-    if (responsePropriedade.data) {
-      const propriedades = responsePropriedade.data.propriedades;
-
-      propriedades.forEach(async (propriedade) => {
-        //salva os arquivos da propriedade
-        propriedade.arquivos.forEach(async (arquivo) => {
-          this.saveFile(
-            arquivo.data,
-            id_usuario + '_prop' + propriedade.nome + '_' + arquivo.nome,
-          );
-        });
-
-        //busca os arquivos dos talhoes
-        const responseTalhoes = await api.post('/arquivo/sincronizar/talhoes', {
-          caminho: id_usuario + '/' + propriedade.nome + '/',
-        });
-
-        const talhoesPolyline = [];
-
-        if (responseTalhoes.data) {
-          //para cada talhao salva os arquivos
-          const talhoes = responseTalhoes.data.talhoes;
-          talhoes.forEach(async (talhao) => {
-            talhao.arquivos.forEach(async (arquivo) => {
-              this.saveFile(
-                arquivo.data,
-                id_usuario +
-                  '_prop' +
-                  propriedade.nome +
-                  '_th' +
-                  talhao.nome +
-                  '_' +
-                  arquivo.nome,
-              );
-
-              //adiciona o mapa do talhao a um arquivo com todos os demais talhoes
-              if (arquivo.nome === 'field_' + talhao.nome + '_json.txt') {
-                const jsonTalhao = JSON.parse(arquivo.data);
-
-                const talhaoPolyline = [];
-
-                jsonTalhao['coordinates'][0].forEach(coord => {
-                  talhaoPolyline.push({
-                      latitude: coord[1],
-                      longitude: coord[0],
-                  });
-                });
-
-                talhoesPolyline.push({
-                  talhao: talhao.nome,
-                  coordenadas: talhaoPolyline,
-                });
-              }
-            });
-          });
-        }
-
-        //salva o arquivo de mapas dos talhoes
-        this.saveFile(
-          JSON.stringify(talhoesPolyline),
-          id_usuario + '_prop' + propriedade.nome + '_polyline.txt',
-        );
-
-        //salva um arquivo com informacoes das propriedades
-        const responseProps = await api.get('/propriedade/listar/' + id_usuario);
-        if (responseProps) {
-          this.saveFile(
-            JSON.stringify(responseProps.data),
-            id_usuario + '_propiedades.txt',
-          );
-        }
-      });
-    }
-  };
-
-  saveFile = async (content, name) => {
-    const path = RNFS.DocumentDirectoryPath + '/';
-    RNFS.writeFile(path + name, content, 'utf8');
-  };
 
   loadPropriedades = async () => {
     const id_usuario = await AsyncStorage.getItem('@save_id');
@@ -128,18 +29,11 @@ export default class Propriedade extends React.Component {
       );
     }
 
-    const data = await this.lerArquivo(id_usuario + '_propiedades.txt');
-    const propriedades = JSON.parse(data);
-    this.setState({propriedades: propriedades.propriedades});
-
-    /*if(Connection.isConnected()) {
-      const response = await api.get('/propriedade/listar/' + id_usuario);
-
-      const {propriedades} = response.data;
-      this.setState({propriedades});
-    } else {
-
-    }*/
+    if (await RNFS.exists(RNFS.DocumentDirectoryPath + '/' + id_usuario + '_propriedades.txt')) {
+      const data = await this.lerArquivo(id_usuario + '_propriedades.txt');
+      const propriedades = JSON.parse(data);
+      this.setState({propriedades: propriedades.propriedades});
+    }
   };
 
   setarPropriedade = async (id) => {

@@ -40,7 +40,6 @@ export default class Cadastro extends React.Component {
       this.state.login.length === 0 ||
       this.state.nome.length === 0 ||
       this.state.telefone.length === 0 ||
-      this.state.identificador.length === 0 ||
       this.state.senha.length === 0 ||
       this.state.confirma_senha.length === 0
     ) {
@@ -58,6 +57,7 @@ export default class Cadastro extends React.Component {
           telefone: this.state.telefone,
           senha: this.state.senha,
           confirma_senha: this.state.confirma_senha,
+          identificador: '0',
         });
 
         console.log(response.data);
@@ -147,7 +147,8 @@ export default class Cadastro extends React.Component {
           style={styles.loginBtn}
           //onPress={this.handleCadastroPress}>
           onPress={() => {
-            this.props.navigation.navigate('BemVindo');
+            this.handleCadastroPress();
+            //this.props.navigation.navigate('BemVindo');
           }}>
           <Text style={styles.loginText}>Avançar</Text>
         </TouchableOpacity>
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
   forgot: {
     color: '#ebf3e8',
     padding: 10,
-    marginTop: 20,
+    marginTop: 10,
     fontSize: 14,
     fontWeight: 'bold',
   },
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: 20,
     marginBottom: 10,
   },
   loginText: {

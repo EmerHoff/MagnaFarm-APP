@@ -143,9 +143,8 @@ export default class NDVI extends React.Component {
     return (
       <View style={styles.container}>
         <Text style={styles.logo}>Lista de NDVI</Text>
-
-        <View>
-          <FlatList style={styles.listaContainer}
+        <View style={styles.listaContainer}>
+          <FlatList
             data={this.state.mapas}
             keyExtractor={(item, index) => item.data}
             renderItem={this.renderItem}
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#2e7d42',
     width: '80%',
-    height: '60%',
+    height: '75%',
     borderWidth: 1,
     borderColor: '#FFF',
     borderRadius: 5,

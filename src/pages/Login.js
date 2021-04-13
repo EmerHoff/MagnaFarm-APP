@@ -7,12 +7,13 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  PermissionsAndroid
 } from 'react-native';
 
 import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import RNFS from 'react-native-fs';
 export default class Login extends React.Component {
   state = {
     email: '',
@@ -20,6 +21,41 @@ export default class Login extends React.Component {
     error: '',
     loading: false,
   };
+
+  componentDidMount() {
+    this.requestPermissions();
+  }
+
+  requestPermissions = async () => {
+    const fineLocation = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+    const coarseLocation = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION);
+
+    if (!fineLocation) {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: "Permissão de Localização",
+          message: "O App precisa de acesso a sua localização.",
+          buttonNeutral: "Pergunte-me depois",
+          buttonNegative: "Cancelar",
+          buttonPositive: "OK"
+        }
+      );
+    }
+
+    if (!coarseLocation) {
+      const granted2 = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+        {
+          title: "Permissão de Localização Precisa",
+          message: "O App precisa de acesso a sua localização mais precisa.",
+          buttonNeutral: "Pergunte-me depois",
+          buttonNegative: "Cancelar",
+          buttonPositive: "OK"
+        }
+      );
+    }
+  }
 
   handleEmailChange = (email) => {
     this.setState({email});
@@ -56,6 +92,7 @@ export default class Login extends React.Component {
           await AsyncStorage.setItem('@save_id', response.data.usuario.id.toString());
 
           this.setState({loading: false});
+          await this.synchronizeUser();
           this.props.navigation.navigate('Propriedade');
         } else {
           this.setState({loading: false});
@@ -71,6 +108,101 @@ export default class Login extends React.Component {
       }
     }
     this.setState({loading: false});
+  };
+
+  synchronizeUser = async () => {
+    const id_usuario = await AsyncStorage.getItem('@save_id');
+
+    if (!id_usuario) {
+      return;
+    }
+
+    //salva um arquivo com informacoes das propriedades
+    const responseProps = await api.get('/propriedade/listar/' + id_usuario);
+    
+    console.log(responseProps.data);
+    if (responseProps.data) {
+      console.log('foii');
+      await this.saveFile(JSON.stringify(responseProps.data), id_usuario + '_propriedades.txt');
+    }
+
+    //salvar os arquivos da propriedade
+    const responsePropriedade = await api.post(
+      '/arquivo/sincronizar/propriedades',
+      {
+        caminho: id_usuario + '/',
+      },
+    );
+
+    if (responsePropriedade.data) {
+      const propriedades = responsePropriedade.data.propriedades;
+
+      propriedades.forEach(async (propriedade) => {
+        //salva os arquivos da propriedade
+        propriedade.arquivos.forEach(async (arquivo) => {
+          this.saveFile(
+            arquivo.data,
+            id_usuario + '_prop' + propriedade.nome + '_' + arquivo.nome,
+          );
+        });
+
+        //busca os arquivos dos talhoes
+        const responseTalhoes = await api.post('/arquivo/sincronizar/talhoes', {
+          caminho: id_usuario + '/' + propriedade.nome + '/',
+        });
+
+        const talhoesPolyline = [];
+
+        if (responseTalhoes.data) {
+          //para cada talhao salva os arquivos
+          const talhoes = responseTalhoes.data.talhoes;
+          talhoes.forEach(async (talhao) => {
+            talhao.arquivos.forEach(async (arquivo) => {
+              this.saveFile(
+                arquivo.data,
+                id_usuario +
+                  '_prop' +
+                  propriedade.nome +
+                  '_th' +
+                  talhao.nome +
+                  '_' +
+                  arquivo.nome,
+              );
+
+              //adiciona o mapa do talhao a um arquivo com todos os demais talhoes
+              if (arquivo.nome === 'field_' + talhao.nome + '_json.txt') {
+                const jsonTalhao = JSON.parse(arquivo.data);
+
+                const talhaoPolyline = [];
+
+                jsonTalhao['coordinates'][0].forEach(coord => {
+                  talhaoPolyline.push({
+                      latitude: coord[1],
+                      longitude: coord[0],
+                  });
+                });
+
+                talhoesPolyline.push({
+                  talhao: talhao.nome,
+                  coordenadas: talhaoPolyline,
+                });
+              }
+            });
+          });
+        }
+
+        //salva o arquivo de mapas dos talhoes
+        this.saveFile(
+          JSON.stringify(talhoesPolyline),
+          id_usuario + '_prop' + propriedade.nome + '_polyline.txt',
+        );
+      });
+    }
+  };
+
+  saveFile = async (content, name) => {
+    const path = RNFS.DocumentDirectoryPath + '/';
+    RNFS.writeFile(path + name, content, 'utf8');
   };
 
   render() {

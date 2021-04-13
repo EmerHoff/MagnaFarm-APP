@@ -239,9 +239,9 @@ export default class NovaPropriedade extends React.Component {
 
         <TouchableOpacity
           onPress={() => {
-            this.props.navigation.navigate('Inicio');
+            this.props.navigation.navigate('Propriedade');
           }}>
-          <Text style={styles.forgot}>Voltar para o Inicio</Text>
+          <Text style={styles.forgot}>Voltar</Text>
         </TouchableOpacity>
       </View>
     );
@@ -259,14 +259,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 40,
     color: '#ebf3e8',
-    marginBottom: 40,
+    marginBottom: 0,
   },
   inputView: {
     width: '80%',
     backgroundColor: '#194314',
     borderRadius: 25,
     height: 50,
-    marginBottom: 20,
+    marginBottom: '4%',
     justifyContent: 'center',
     padding: 20,
   },
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   forgot: {
     color: '#ebf3e8',
     padding: 10,
-    marginTop: 20,
+    marginTop: '2%',
     fontSize: 14,
     fontWeight: 'bold',
   },
@@ -298,8 +298,8 @@ const styles = StyleSheet.create({
     height: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: '2%',
+    marginBottom: '2%',
   },
   fileText: {
     height: 20,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     marginBottom: 20,
-    marginTop: -20,
+    marginTop: 5,
     width: '80%',
   },
 });

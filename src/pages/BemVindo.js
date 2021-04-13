@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#3c9c54',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
   logo: {
     fontWeight: 'bold',
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
   textoInicial: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 16,
     textAlign: 'center',
     color: '#ebf3e8',
     marginBottom: 40,

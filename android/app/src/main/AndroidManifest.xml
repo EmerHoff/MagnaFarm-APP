@@ -1,20 +1,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.mobile">
+  package="com.mobile.magnafarm">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
-      android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher_round"
+      android:icon="@drawable/icon"
+      android:roundIcon="@drawable/icon"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
       <meta-data
       android:name="com.google.android.geo.API_KEY"
-      android:value="AIzaSyAOv_JHteyBYFowqfS_MSUcBVqxa2n-lIY"/>
+      android:value="AIzaSyBB9Chyy6C6ny8mG1YNouaXcuGxeE2-Mww"/>
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
