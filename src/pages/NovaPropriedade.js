@@ -23,6 +23,8 @@ export default class NovaPropriedade extends React.Component {
     selectedFile: '',
   };
 
+  resFile; 
+
   handleSalvarPress = async () => {
     if (
       this.state.nome.length === 0 ||
@@ -67,7 +69,7 @@ export default class NovaPropriedade extends React.Component {
         });
 
         if (response.data.statusCode === 200) {
-          //uploadImage();
+          this.uploadImage();
           this.props.navigation.navigate('Propriedade');
         } else {
           this.setState({
@@ -85,7 +87,7 @@ export default class NovaPropriedade extends React.Component {
 
   uploadImage = async () => {
     // Check if any file is selected or not
-    if (this.state.selectedFile === '') {
+    if (this.resFile !== null && this.resFile !== undefined) {
 
       /*const fileToUpload = singleFile;
       const data = new FormData();
@@ -109,13 +111,12 @@ export default class NovaPropriedade extends React.Component {
 
       const data = new FormData();
       data.append('name', 'file_send');
-      data.append('file', this.state.selectedFile);
-      //data.append('file', this.state.selectedFile);
+      data.append('file', this.resFile);
 
       api.post('/usuario/arquivo', data, { // receive two parameter endpoint url ,form data 
       })
       .then(res => { // then print response status
-          console.warn(res);
+          //console.warn(res);
       });
 
 
@@ -136,6 +137,8 @@ export default class NovaPropriedade extends React.Component {
       console.log('res : ' + JSON.stringify(res));
       // Setting the state to show single file attributes
       this.setState({ selectFile: res });
+
+      this.resFile = res;
     } catch (err) {
       this.setState({ selectFile: '' });
       // Handling any exception (If any)
